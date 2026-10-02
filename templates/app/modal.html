@@ -1,49 +1,61 @@
-<div class="modal" tabindex="-1" role="dialog" id="obsModal" style="overflow-y: auto;">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document" style="max-width: 39%;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Observações do Objeto</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-            <table class="table table-responsive text-nowrap" style="text-align: center;">
-                <tr>
-                    <th>Índice</th>
-                    <th>Missão</th>
-                    <th>Ano</th>
-                    <th>Autor</th>
-                    <th>TIC ID</th>
-                </tr>
-                {% for obs in d %}
-                <tr class="observation" data-href="{% url 'object' ticID=obs.target_name ind=forloop.counter0 %}">
-                    <td>
-                        <a href="{% url 'object' ticID=obs.target_name ind=forloop.counter0 %}" style="font-size: 15px;">{{forloop.counter0}}</a>
-                    </td>
-                    <td>
-                        <a href="{% url 'object' ticID=obs.target_name ind=forloop.counter0 %}" style="font-size: 15px;">{{obs.mission}}</a>
-                    </td>
-                    <td>
-                        <a href="{% url 'object' ticID=obs.target_name ind=forloop.counter0 %}" style="font-size: 15px;">{{obs.year}}</a>
-                    </td>
-                    <td>
-                        <a href="{% url 'object' ticID=obs.target_name ind=forloop.counter0 %}" style="font-size: 15px;">{{obs.author}}</a>
-                    </td>
-                    <td>
-                        <a href="{% url 'object' ticID=obs.target_name ind=forloop.counter0 %}" style="font-size: 15px;">{{obs.target_name}}</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-      </div>
+<div class="sagan-modal-backdrop open" id="obsBackdrop">
+  <div class="sagan-modal">
+    <div class="sagan-modal-header">
+      <h5>
+        <i class="fa-solid fa-satellite-dish me-2" style="color:var(--purple);font-size:.875rem;"></i>
+        Observações do Objeto
+      </h5>
+      <button class="sagan-modal-close" onclick="closeModal()" aria-label="Fechar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
-</div>
 
-<script>
-    $(".close").click(function(){
-        $("#obsModal").hide();
-        $('.overlay').fadeOut(1000);
-    });
-</script>
+    <div class="sagan-modal-body">
+      {% if d %}
+      <table class="obs-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Missão</th>
+            <th>Ano</th>
+            <th>Autor</th>
+            <th>TIC ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obs in d %}
+          <tr>
+            <td>{{ forloop.counter0 }}</td>
+            <td>
+              <a href="{% url 'object' ticID=obs.tic_id ind=forloop.counter0 %}">
+                {{ obs.mission }}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'object' ticID=obs.tic_id ind=forloop.counter0 %}">
+                {{ obs.year }}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'object' ticID=obs.tic_id ind=forloop.counter0 %}">
+                {{ obs.author }}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'object' ticID=obs.tic_id ind=forloop.counter0 %}">
+                {{ obs.tic_id }}
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="modal-loading">
+        <i class="fa-solid fa-circle-exclamation" style="font-size:1.5rem; opacity:.4;"></i>
+        <span>Nenhuma observação encontrada para este objeto.</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,159 @@
+{% extends 'app/index.html' %}
+
+{% block title %}Como Usar{% endblock %}
+{% block nav_tutorial %}active{% endblock %}
+
+{% block content %}
+<div class="page-container page-fade" style="max-width:860px;">
+
+  <div class="page-header">
+    <h1>Como Usar o SAGAN</h1>
+    <p>Guia passo a passo para explorar o catálogo e analisar curvas de luz do telescópio TESS.</p>
+  </div>
+
+  <div class="docs-body">
+
+    <!-- Step 1 -->
+    <div class="docs-step">
+      <div class="docs-step-num">1</div>
+      <div class="docs-step-content">
+        <h2 class="docs-step-title">Acessar a Lista de Objetos</h2>
+        <p>Na barra de navegação, clique em <strong>Lista de Objetos</strong>. Você verá uma tabela com todos os objetos catalogados pelo TESS, vindos diretamente do catálogo <strong>ExoFOP IPAC</strong> da NASA em tempo real.</p>
+        <div class="docs-tip">
+          <i class="fa-solid fa-bolt" style="color:var(--purple);"></i>
+          <span>O catálogo é carregado no primeiro acesso e fica em cache por 1 hora — recarregamentos subsequentes são instantâneos.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="docs-step">
+      <div class="docs-step-num">2</div>
+      <div class="docs-step-content">
+        <h2 class="docs-step-title">Buscar e Filtrar</h2>
+        <p>Use a barra de filtros acima da tabela para localizar objetos específicos:</p>
+        <ul class="docs-list">
+          <li><strong>Campo de busca:</strong> pesquisa por TIC ID, TOI, fonte ou comentários.</li>
+          <li><strong>Disposição:</strong> filtra por KP, CP, PC, FP ou outras categorias.</li>
+          <li><strong>Fonte:</strong> filtra pelo pipeline que identificou o objeto (ex: SPOC, QLP).</li>
+        </ul>
+        <p>Para <strong>ordenar</strong> qualquer coluna, clique no cabeçalho. Clique novamente para inverter a ordem.</p>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="docs-step">
+      <div class="docs-step-num">3</div>
+      <div class="docs-step-content">
+        <h2 class="docs-step-title">Ver Observações do Objeto</h2>
+        <p>Clique em qualquer linha da tabela para abrir o modal de observações. Ele consulta o arquivo <strong>MAST da NASA</strong> e lista todas as observações disponíveis do objeto, com:</p>
+        <ul class="docs-list">
+          <li><strong>#:</strong> índice da observação (usado na URL).</li>
+          <li><strong>Missão:</strong> setor TESS (ex: TESS Sector 1).</li>
+          <li><strong>Ano:</strong> ano da observação.</li>
+          <li><strong>Autor:</strong> pipeline de redução de dados (ex: SPOC, TESS-SPOC).</li>
+        </ul>
+        <div class="docs-tip">
+          <i class="fa-solid fa-clock" style="color:var(--purple);"></i>
+          <span>A consulta ao MAST pode levar de 5 a 30 segundos dependendo da conexão e do servidor da NASA.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="docs-step">
+      <div class="docs-step-num">4</div>
+      <div class="docs-step-content">
+        <h2 class="docs-step-title">Analisar a Curva de Luz</h2>
+        <p>Clique em um item no modal para abrir a curva de luz daquela observação. O gráfico mostra o <strong>fluxo normalizado</strong> em função do tempo (BJD — Barycentric Julian Date).</p>
+        <ul class="docs-list">
+          <li><strong>Zoom:</strong> use a roda do mouse ou trackpad.</li>
+          <li><strong>Navegar:</strong> clique e arraste para mover o gráfico.</li>
+          <li><strong>Baixar CSV:</strong> exporta os dados brutos para análise externa.</li>
+          <li><strong>Baixar PNG:</strong> salva uma imagem do gráfico atual.</li>
+          <li><strong>Comparar:</strong> abre o modo lado a lado para comparar o gráfico original com o modificado.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="docs-step">
+      <div class="docs-step-num">5</div>
+      <div class="docs-step-content">
+        <h2 class="docs-step-title">Usar o Painel de Análise</h2>
+        <p>Abaixo do gráfico, o <strong>Painel de Análise</strong> permite aplicar funções científicas da biblioteca Lightkurve sobre a curva de luz.</p>
+
+        <div class="docs-func-grid">
+          <div class="docs-func-card">
+            <div class="docs-func-name">Achatar (Flatten)</div>
+            <p>Remove a variação de longo prazo do brilho estelar usando um filtro Savitzky-Golay. É o primeiro passo para identificar transits. <em>Ajuste a "Janela" para controlar o quão agressiva é a remoção de tendência.</em></p>
+          </div>
+          <div class="docs-func-card">
+            <div class="docs-func-name">Dobrar (Fold)</div>
+            <p>Dobra a curva de luz pelo período orbital, alinhando todos os transits. O eixo X passa a representar a fase. <em>O período pode ser obtido pelo periodograma.</em></p>
+          </div>
+          <div class="docs-func-card">
+            <div class="docs-func-name">Agrupar (Bin)</div>
+            <p>Agrupa pontos próximos no tempo, calculando a média dentro de cada bin. Reduz ruído aleatório e melhora a visualização de transits. <em>O tamanho do bin é em dias.</em></p>
+          </div>
+          <div class="docs-func-card">
+            <div class="docs-func-name">Remover Outliers</div>
+            <p>Remove pontos que desviam mais que N desvios-padrão da mediana. Limpa artefatos instrumentais e falhas de medição. <em>Sigma = 5 é um bom ponto de partida.</em></p>
+          </div>
+          <div class="docs-func-card">
+            <div class="docs-func-name">Suavizar (Smooth)</div>
+            <p>Aplica uma média móvel para suavizar ruído de alta frequência. Diferente do Flatten — não remove tendências, apenas suaviza flutuações rápidas.</p>
+          </div>
+          <div class="docs-func-card">
+            <div class="docs-func-name">Normalizar</div>
+            <p>Renormaliza o fluxo pela mediana. Permite mudar a unidade para porcentagem ou partes por milhão (ppm), facilitando comparações.</p>
+          </div>
+          <div class="docs-func-card">
+            <div class="docs-func-name">Truncar</div>
+            <p>Recorta a curva de luz para um intervalo de tempo específico (em BJD). Útil para focar em um único trânsito ou remover bordas ruidosas.</p>
+          </div>
+        </div>
+
+        <div class="docs-tip" style="margin-top:1rem;">
+          <i class="fa-solid fa-layer-group" style="color:var(--purple);"></i>
+          <span>As funções são empilhadas — você pode aplicar várias em sequência. Remove uma função específica clicando no <strong>×</strong> ao lado dela, ou restaure o original com o botão <strong>Restaurar</strong>.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 6 -->
+    <div class="docs-step">
+      <div class="docs-step-num">6</div>
+      <div class="docs-step-content">
+        <h2 class="docs-step-title">Periodograma Automático</h2>
+        <p>No menu <strong>Ferramentas</strong> do gráfico, acesse <em>Periodograma automático</em>. O SAGAN calcula automaticamente o período de máxima potência e exibe a curva dobrada.</p>
+        <div class="docs-tip">
+          <i class="fa-solid fa-info-circle" style="color:var(--purple);"></i>
+          <span>O periodograma usa o método BLS (Box Least Squares), otimizado para detectar transits planetários. O cálculo pode levar alguns segundos.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 7 -->
+    <div class="docs-step">
+      <div class="docs-step-num">7</div>
+      <div class="docs-step-content">
+        <h2 class="docs-step-title">Modo de Comparação</h2>
+        <p>Clique em <strong>Comparar</strong> na barra do gráfico para ativar o modo lado a lado. O gráfico à esquerda mostra sempre a curva original (normalizada), e o da direita mostra o estado atual com todas as funções aplicadas.</p>
+        <p>Isso facilita avaliar o impacto visual de cada transformação antes de continuar a análise.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="docs-footer">
+    <a href="{% url 'theory' %}" class="btn-tool">
+      <i class="fa-solid fa-atom"></i> Ver a teoria por trás dos dados
+    </a>
+    <a href="{% url 'list' %}" class="btn-tool">
+      <i class="fa-solid fa-table"></i> Ir para a lista de objetos
+    </a>
+  </div>
+
+</div>
+{% endblock %}

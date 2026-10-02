@@ -1,52 +1,41 @@
 {% extends 'app/index.html' %}
 {% load static %}
 
-{% block title %}Página Inicial{% endblock %}
+{% block title %}Início{% endblock %}
+{% block nav_home %}active{% endblock %}
 
 {% block content %}
-<style>
-    body{
-        background: url("{% static 'app/media/universe_background.jpg' %}") fixed;
-        background-size: cover;
-        background-repeat: no-repeat;
-    }
-    .container{
-        margin-top: 17%;
-    }
-    .logo{
-        height: 183.3px;
+<section class="hero">
+  <div class="hero-bg" style="background-image: url('{% static 'app/media/universe_background.jpg' %}');"></div>
+  <div class="hero-overlay"></div>
 
-    }
-</style>
+  <div class="hero-content">
+    <img src="{% static 'app/media/logo.png' %}" class="hero-logo" alt="SAGAN">
 
-<div class="container" style="width: 100%;">
-    <div class="row align-items-center">
-        <div class="col"></div>
-        <div class="col">
-            <img src="{% static 'app/media/logo.png' %}" class="logo" alt="">
-        </div>
-        <div class="col"></div>
+    <p class="hero-tagline">Search · Ask · Gather · Analyze · Now</p>
+
+    <p class="hero-title">
+      Explore dados de curvas de luz do telescópio TESS e investigue exoplanetas em tempo real.
+    </p>
+
+    <a href="{% url 'list' %}" class="btn-hero">
+      Explorar objetos <i class="fa-solid fa-arrow-right"></i>
+    </a>
+
+    <div class="hero-stats">
+      <div>
+        <span class="hero-stat-value">{{ toi_count|default:"Milhares" }}</span>
+        <span class="hero-stat-label">Objetos catalogados</span>
+      </div>
+      <div>
+        <span class="hero-stat-value">TESS</span>
+        <span class="hero-stat-label">Fonte dos dados</span>
+      </div>
+      <div>
+        <span class="hero-stat-value">MAST</span>
+        <span class="hero-stat-label">Arquivo NASA</span>
+      </div>
     </div>
-    <br>
-    <div class="row align-items-center">
-        <div class="col"></div>
-        <div class="col">
-            <a href="{% url 'list' %}" 
-            class="btn btn-outline-primary btn-lg btn-block" 
-            role="button" 
-            onMouseOver="this.style.backgroundColor='rgba(0,0,0,.8)'"
-            onMouseOut="this.style.backgroundColor='transparent'"
-            aria-pressed="true" 
-            style="
-                font-size: 30px;
-                color: rgb(255, 255, 255);
-                border-width: 3px;
-                border-color: white;
-                border-radius: 15px;
-                ">Explore agora!</a>
-        </div>
-        <div class="col"></div>
-    </div>
-</div>
-
+  </div>
+</section>
 {% endblock %}

@@ -1,132 +1,319 @@
 {% extends 'app/index.html' %}
 
 {% block title %}Lista de Objetos{% endblock %}
+{% block nav_list %}active{% endblock %}
 
 {% block content %}
-<style>
-    ::-webkit-scrollbar-thumb {
-        background-color: rgb(255, 255, 255);
-        outline: 2px solid rgb(212, 212, 212);
-        outline-offset: -2px;
-    }
+<div class="page-container page-fade">
 
-    ::-webkit-scrollbar {
-        width: 1em;
-        height: 1em;
-        background-color: rgb(212, 212, 212);
-    }
-</style>
-<div class="container">
-    <div class="row form-group mt-4">
-        <h4 style="
-            font-family: 'Inter';
-            font-style: normal;
-            color: rgb(0, 0, 0);
-            font-weight: lighter;">Pesquise um objeto de interesse:</h4>
-        <div class="input-group">
-            <input type="search" id="form1" class="form-control" />
-            <span class="input-group-append" style="z-index: 0; background-color: rgb(255, 255, 255);">
-                <button class="btn btn-outline-secondary border-left-0 border" onclick="searchInput()" type="button">
-                    <i style="color: #5B3FBF; " class="fas fa-search"></i>
-                </button>
-            </span>
-        </div>
-    </div>
-    <div class="row form-group">
-        <div class="col"></div>
-        <div class="col">
-            <div class="table-responsive text-nowrap" style="max-height: 520px; border-radius: 20px;">
-                <table class="table table-bordered" id="objTable">
-                    <thead class="thead" style="background-color:#5B3FBF;">
-                        <tr style="font-size: 18px; color: rgb(255, 255, 255); -webkit-text-stroke: 0.4px black;">
-                            <th>TESS Input Catalog ID (TIC ID)</th>
-                            <th>TESS Object of Interest (TOI)</th>
-                            <th>TESS Disposition</th>
-                            <th>Fonte</th>
-                            <th>Período (dias)</th>
-                            <th>Raio da Estrela (1 - Sol)</th>
-                            <th>Massa da Estrela (1 - Sol)</th>
-                            <th>Data de Identificação TOI</th>
-                            <th>Data de Atualização TOI</th>
-                            <th>Última Modificação</th>
-                            <th>Comentários</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in d.data %}
-                        <tr>
-                            <td class="ticID" span="{{item.1}}">
-                                <a href="#" class="btn btn-sm" style="font-size: 15px;">{{item.1}}</a>
-                            </td>
-                            <td>{{item.2}}</td>
-                            <td>{{item.3}}</td>
-                            <td>{{item.4}}</td>
-                            <td>{{item.5}}</td>
-                            <td>{{item.6}}</td>
-                            <td>{{item.7}}</td>
-                            <td>{{item.8}}</td>
-                            <td>{{item.9}}</td>
-                            <td>{{item.10}}</td>
-                            <td>{{item.11}}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="col"></div>
-    </div>
-    <div class="row">
-        <div class="col"></div>
-        <div class="col-6">
-            <div class="returnModal">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>Lista de Objetos</h1>
+    <p>
+      {% if q or disposition or source %}
+        {{ total_count }} resultado{% if total_count != 1 %}s{% endif %} encontrado{% if total_count != 1 %}s{% endif %}
+        &nbsp;·&nbsp; <a href="{% url 'list' %}" style="font-size:0.8125rem;">limpar filtros</a>
+      {% else %}
+        {{ total_count }} objeto{% if total_count != 1 %}s{% endif %} catalogados pelo TESS
+      {% endif %}
+    </p>
+  </div>
 
-            </div>
+  <!-- Filter bar -->
+  <form method="get" action="{% url 'list' %}">
+    <input type="hidden" name="order_by" value="{{ order_by }}">
+    <input type="hidden" name="order_dir" value="{{ order_dir }}">
+    <div class="filter-bar">
+      <div class="filter-row">
+        <div class="search-wrap" style="flex:1; min-width:180px; max-width:320px;">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            type="search"
+            name="q"
+            value="{{ q }}"
+            class="search-input"
+            placeholder="TIC ID, TOI, comentários…"
+            autocomplete="off"
+          >
         </div>
-        <div class="col"></div>
+
+        <select name="disposition" class="filter-select">
+          <option value="">Todas disposições</option>
+          {% for d in dispositions %}
+          <option value="{{ d }}" {% if d == disposition %}selected{% endif %}>{{ d }}</option>
+          {% endfor %}
+        </select>
+
+        <select name="source" class="filter-select">
+          <option value="">Todas as fontes</option>
+          {% for s in sources %}
+          <option value="{{ s }}" {% if s == source %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+
+        <button type="submit" class="btn-search">
+          <i class="fa-solid fa-filter me-1" style="font-size:.7rem;"></i>Filtrar
+        </button>
+
+        {% if q or disposition or source %}
+        <a href="{% url 'list' %}" class="btn-clear">
+          <i class="fa-solid fa-xmark me-1" style="font-size:.7rem;"></i>Limpar
+        </a>
+        {% endif %}
+      </div>
     </div>
+  </form>
+
+  <!-- Table -->
+  <div class="sagan-table-wrap">
+    <div style="overflow-x:auto; max-height: 58vh;">
+      <table class="sagan-table">
+        <thead>
+          <tr>
+            {% with fqs=filter_qs ob=order_by od=order_dir %}
+
+            {% with col="tic_id" %}
+            <th>
+              <a href="?{{ fqs }}{% if fqs %}&{% endif %}order_by={{ col }}&order_dir={% if ob == col and od == 'asc' %}desc{% else %}asc{% endif %}&page=1" class="sort-link{% if ob == col %} sorted{% endif %}">
+                TIC ID
+                {% if ob == col %}<i class="fa-solid fa-sort-{% if od == 'asc' %}up{% else %}down{% endif %}"></i>{% else %}<i class="fa-solid fa-sort" style="opacity:.25;"></i>{% endif %}
+              </a>
+            </th>
+            {% endwith %}
+
+            {% with col="toi" %}
+            <th>
+              <a href="?{{ fqs }}{% if fqs %}&{% endif %}order_by={{ col }}&order_dir={% if ob == col and od == 'asc' %}desc{% else %}asc{% endif %}&page=1" class="sort-link{% if ob == col %} sorted{% endif %}">
+                TOI
+                {% if ob == col %}<i class="fa-solid fa-sort-{% if od == 'asc' %}up{% else %}down{% endif %}"></i>{% else %}<i class="fa-solid fa-sort" style="opacity:.25;"></i>{% endif %}
+              </a>
+            </th>
+            {% endwith %}
+
+            {% with col="disposition" %}
+            <th>
+              <a href="?{{ fqs }}{% if fqs %}&{% endif %}order_by={{ col }}&order_dir={% if ob == col and od == 'asc' %}desc{% else %}asc{% endif %}&page=1" class="sort-link{% if ob == col %} sorted{% endif %}">
+                Disposição
+                {% if ob == col %}<i class="fa-solid fa-sort-{% if od == 'asc' %}up{% else %}down{% endif %}"></i>{% else %}<i class="fa-solid fa-sort" style="opacity:.25;"></i>{% endif %}
+              </a>
+            </th>
+            {% endwith %}
+
+            {% with col="source" %}
+            <th>
+              <a href="?{{ fqs }}{% if fqs %}&{% endif %}order_by={{ col }}&order_dir={% if ob == col and od == 'asc' %}desc{% else %}asc{% endif %}&page=1" class="sort-link{% if ob == col %} sorted{% endif %}">
+                Fonte
+                {% if ob == col %}<i class="fa-solid fa-sort-{% if od == 'asc' %}up{% else %}down{% endif %}"></i>{% else %}<i class="fa-solid fa-sort" style="opacity:.25;"></i>{% endif %}
+              </a>
+            </th>
+            {% endwith %}
+
+            {% with col="period" %}
+            <th>
+              <a href="?{{ fqs }}{% if fqs %}&{% endif %}order_by={{ col }}&order_dir={% if ob == col and od == 'asc' %}desc{% else %}asc{% endif %}&page=1" class="sort-link{% if ob == col %} sorted{% endif %}">
+                Período (dias)
+                {% if ob == col %}<i class="fa-solid fa-sort-{% if od == 'asc' %}up{% else %}down{% endif %}"></i>{% else %}<i class="fa-solid fa-sort" style="opacity:.25;"></i>{% endif %}
+              </a>
+            </th>
+            {% endwith %}
+
+            {% with col="stellar_radius" %}
+            <th>
+              <a href="?{{ fqs }}{% if fqs %}&{% endif %}order_by={{ col }}&order_dir={% if ob == col and od == 'asc' %}desc{% else %}asc{% endif %}&page=1" class="sort-link{% if ob == col %} sorted{% endif %}">
+                Raio Estelar (R☉)
+                {% if ob == col %}<i class="fa-solid fa-sort-{% if od == 'asc' %}up{% else %}down{% endif %}"></i>{% else %}<i class="fa-solid fa-sort" style="opacity:.25;"></i>{% endif %}
+              </a>
+            </th>
+            {% endwith %}
+
+            {% with col="stellar_mass" %}
+            <th>
+              <a href="?{{ fqs }}{% if fqs %}&{% endif %}order_by={{ col }}&order_dir={% if ob == col and od == 'asc' %}desc{% else %}asc{% endif %}&page=1" class="sort-link{% if ob == col %} sorted{% endif %}">
+                Massa Estelar (M☉)
+                {% if ob == col %}<i class="fa-solid fa-sort-{% if od == 'asc' %}up{% else %}down{% endif %}"></i>{% else %}<i class="fa-solid fa-sort" style="opacity:.25;"></i>{% endif %}
+              </a>
+            </th>
+            {% endwith %}
+
+            {% with col="alerted" %}
+            <th>
+              <a href="?{{ fqs }}{% if fqs %}&{% endif %}order_by={{ col }}&order_dir={% if ob == col and od == 'asc' %}desc{% else %}asc{% endif %}&page=1" class="sort-link{% if ob == col %} sorted{% endif %}">
+                Identificação
+                {% if ob == col %}<i class="fa-solid fa-sort-{% if od == 'asc' %}up{% else %}down{% endif %}"></i>{% else %}<i class="fa-solid fa-sort" style="opacity:.25;"></i>{% endif %}
+              </a>
+            </th>
+            {% endwith %}
+
+            {% with col="updated" %}
+            <th>
+              <a href="?{{ fqs }}{% if fqs %}&{% endif %}order_by={{ col }}&order_dir={% if ob == col and od == 'asc' %}desc{% else %}asc{% endif %}&page=1" class="sort-link{% if ob == col %} sorted{% endif %}">
+                Atualização
+                {% if ob == col %}<i class="fa-solid fa-sort-{% if od == 'asc' %}up{% else %}down{% endif %}"></i>{% else %}<i class="fa-solid fa-sort" style="opacity:.25;"></i>{% endif %}
+              </a>
+            </th>
+            {% endwith %}
+
+            {% with col="modified" %}
+            <th>
+              <a href="?{{ fqs }}{% if fqs %}&{% endif %}order_by={{ col }}&order_dir={% if ob == col and od == 'asc' %}desc{% else %}asc{% endif %}&page=1" class="sort-link{% if ob == col %} sorted{% endif %}">
+                Modificação
+                {% if ob == col %}<i class="fa-solid fa-sort-{% if od == 'asc' %}up{% else %}down{% endif %}"></i>{% else %}<i class="fa-solid fa-sort" style="opacity:.25;"></i>{% endif %}
+              </a>
+            </th>
+            {% endwith %}
+
+            <th>Comentários</th>
+
+            {% endwith %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in page_obj %}
+          <tr class="ticID-row" data-id="{{ obj.tic_id }}">
+            <td><span class="tic-link">{{ obj.tic_id }}</span></td>
+            <td>{{ obj.toi }}</td>
+            <td>
+              {% with d=obj.disposition %}
+              <span class="badge-disposition
+                {% if d == 'KP' %}badge-kp
+                {% elif d == 'CP' %}badge-cp
+                {% elif d == 'PC' %}badge-pc
+                {% elif d == 'FP' %}badge-fp
+                {% else %}badge-default{% endif %}">
+                {{ d }}
+              </span>
+              {% endwith %}
+            </td>
+            <td>{{ obj.source }}</td>
+            <td>{{ obj.period }}</td>
+            <td>{{ obj.stellar_radius }}</td>
+            <td>{{ obj.stellar_mass }}</td>
+            <td>{{ obj.alerted }}</td>
+            <td>{{ obj.updated }}</td>
+            <td>{{ obj.modified }}</td>
+            <td style="max-width:180px; white-space:normal; font-size:0.75rem; color:var(--text-muted);">
+              {{ obj.comments }}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="11" style="text-align:center; padding:2.5rem; color:var(--text-muted);">
+              <i class="fa-solid fa-satellite-dish" style="font-size:1.5rem; display:block; margin-bottom:.5rem; opacity:.4;"></i>
+              Nenhum objeto encontrado{% if q %} para "{{ q }}"{% endif %}.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    {% with pqs=filter_qs ob=order_by od=order_dir %}
+    <div class="sagan-pagination">
+      <span class="pagination-info">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        &nbsp;·&nbsp; {{ page_obj.start_index }}–{{ page_obj.end_index }} de {{ total_count }}
+      </span>
+
+      <div class="pagination-controls">
+        {% if page_obj.has_previous %}
+          <a class="pg-btn" href="?{{ pqs }}{% if pqs %}&{% endif %}{% if ob %}order_by={{ ob }}&order_dir={{ od }}&{% endif %}page=1" title="Primeira">«</a>
+          <a class="pg-btn" href="?{{ pqs }}{% if pqs %}&{% endif %}{% if ob %}order_by={{ ob }}&order_dir={{ od }}&{% endif %}page={{ page_obj.previous_page_number }}" title="Anterior">‹</a>
+        {% else %}
+          <span class="pg-btn disabled">«</span>
+          <span class="pg-btn disabled">‹</span>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% if num == page_obj.number %}
+            <span class="pg-btn active">{{ num }}</span>
+          {% elif num == 1 or num == page_obj.paginator.num_pages or num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+            <a class="pg-btn" href="?{{ pqs }}{% if pqs %}&{% endif %}{% if ob %}order_by={{ ob }}&order_dir={{ od }}&{% endif %}page={{ num }}">{{ num }}</a>
+          {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+            <span class="pg-ellipsis">…</span>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <a class="pg-btn" href="?{{ pqs }}{% if pqs %}&{% endif %}{% if ob %}order_by={{ ob }}&order_dir={{ od }}&{% endif %}page={{ page_obj.next_page_number }}" title="Próxima">›</a>
+          <a class="pg-btn" href="?{{ pqs }}{% if pqs %}&{% endif %}{% if ob %}order_by={{ ob }}&order_dir={{ od }}&{% endif %}page={{ page_obj.paginator.num_pages }}" title="Última">»</a>
+        {% else %}
+          <span class="pg-btn disabled">›</span>
+          <span class="pg-btn disabled">»</span>
+        {% endif %}
+      </div>
+    </div>
+    {% endwith %}
+    {% endif %}
+  </div>
+
 </div>
+{% endblock %}
+
+{% block scripts %}
 <script>
-    var obj = document.querySelectorAll(".ticID");
-
-    function abrirModal() {
-        ticID = this.getAttribute("span");
-        $.ajax({
-            url: "{% url 'modal' %}",
-            type: "POST",
-            data: { csrfmiddlewaretoken: "{{ csrf_token }}", id: ticID },
-            success: function (response) {
-                $(".returnModal").html(response);
-                $("#obsModal").show();
-                $('.overlay').fadeIn(1000);
-            }
-        });
-    }
-
-    obj.forEach(function (item) {
-        item.addEventListener("click", abrirModal);
+  document.querySelectorAll('.ticID-row').forEach(function (row) {
+    row.addEventListener('click', function () {
+      openModal(this.getAttribute('data-id'));
     });
+  });
 
-    function searchInput() {
+  function openModal(ticID) {
+    document.getElementById('modalContainer').innerHTML = `
+      <div class="sagan-modal-backdrop open" id="obsBackdrop">
+        <div class="sagan-modal">
+          <div class="sagan-modal-header">
+            <h5><i class="fa-solid fa-satellite-dish me-2" style="color:var(--purple);font-size:.875rem;"></i>Observações do Objeto</h5>
+            <button class="sagan-modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="sagan-modal-body">
+            <div class="modal-loading">
+              <div class="sagan-spinner"></div>
+              <span>Buscando observações no arquivo MAST…</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
 
-        var input, filter, table, tr, td, i, txtValue;
-        input = document.getElementById("form1");
-        filter = input.value.toUpperCase();
-        table = document.getElementById("objTable");
-        tr = table.getElementsByTagName("tr");
+    $.ajax({
+      url: "{% url 'modal' %}",
+      type: "POST",
+      data: { csrfmiddlewaretoken: "{{ csrf_token }}", id: ticID },
+      success: function (response) {
+        document.getElementById('modalContainer').innerHTML = response;
+        document.getElementById('obsBackdrop').classList.add('open');
+      },
+      error: function () {
+        document.getElementById('modalContainer').innerHTML = `
+          <div class="sagan-modal-backdrop open" id="obsBackdrop">
+            <div class="sagan-modal">
+              <div class="sagan-modal-header">
+                <h5>Erro</h5>
+                <button class="sagan-modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="sagan-modal-body">
+                <div class="modal-loading">
+                  <i class="fa-solid fa-circle-exclamation" style="font-size:1.5rem;opacity:.5;"></i>
+                  <span>Não foi possível buscar as observações. Tente novamente.</span>
+                </div>
+              </div>
+            </div>
+          </div>`;
+      }
+    });
+  }
 
-        for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[0];
-            if (td) {
-                txtValue = td.textContent || td.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
-                }
-            }
-        }
-    }
+  function closeModal() {
+    var backdrop = document.getElementById('obsBackdrop');
+    if (backdrop) backdrop.classList.remove('open');
+    setTimeout(function () {
+      document.getElementById('modalContainer').innerHTML = '';
+    }, 250);
+  }
 
+  document.addEventListener('click', function (e) {
+    if (e.target && e.target.id === 'obsBackdrop') closeModal();
+  });
 </script>
 {% endblock %}

@@ -1,154 +1,442 @@
 {% extends 'app/objtemplate.html' %}
 
-{% block title %}Objeto{% endblock %}
+{% block title %}TIC {{ id }}{% endblock %}
 
 {% block content %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"></link>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-<script>
-    google.charts.load('current', {'packages':['corechart'], 'language':'pt-br'});
+<div class="chart-page page-fade">
 
-    function draw(){
-        drawChart();
-    }
+  <!-- ── Main chart card ─────────────────────────────────────── -->
+  <div class="chart-card mb-3">
+    <div class="chart-card-header">
+      <div>
+        <div class="chart-card-title">Curva de Luz</div>
+        <div class="chart-card-meta">TIC {{ id }} &nbsp;·&nbsp; Observação #{{ index }}</div>
+      </div>
+      <span style="font-size:0.75rem; color:var(--text-muted);">
+        <i class="fa-solid fa-circle-info me-1"></i>Scroll para zoom · arraste para navegar
+      </span>
+    </div>
 
-    function drawChart() {
-        data = new google.visualization.DataTable();
-        data.addColumn('number', 'Tempo');
-        data.addColumn('number', 'Fluxo');
-
-        var x = {{x|safe}}
-        var y = {{y|safe}}
-        var id = {{id}}
-
-        for (var i = 0; i < x.length; i++){
-            data.addRow([x[i], parseFloat(y[i])]);
-        }
-
-        var options = {
-            title:'Curva de Luz',
-            titlePosition: 'out',
-            titleTextStyle:{
-                fontName: 'Inter',
-                fontSize: 30,
-            },
-            curveType: 'none',
-            legend: 'none',
-            pointShape: 'star',
-            hAxis:{
-                title: 'Dias - Barycentric Julian Date (BJD)',
-                titleTextStyle: {
-                    fontName: 'Inter',
-                    fontSize: 20,
-                    bold: false
-                }
-            },
-            vAxis: {
-                title: 'Fluxo (J/m²/s)',
-                titleTextStyle: {
-                    fontName: 'Inter',
-                    fontSize: 20,
-                    bold: false
-                }
-            },
-            axisTitlesPosition: 'out',
-            colors: ['#500980'],
-            explorer: {
-                keepInBounds: true,
-                maxZoomOut: 1,
-                maxZoomIn: 0.02
-            },
-        };
-
-        var chart_div = document.getElementById('lightcurve');
-        var chart = new google.visualization.LineChart(chart_div);
-        
-
-        chart.draw(data, options);
-
-        google.visualization.events.addListener(chart, 'ready', function () {
-            document.getElementById('png-btn').setAttribute("href", chart.getImageURI());
-        });
-
-        $('#csv-button').on('click', function(){
-            var csvColumns;
-            var csvContent;
-            var downloadLink;
-            var filename;
-
-            csvColumns = '';
-            for (var i = 0; i < data.getNumberOfColumns(); i++) {
-                csvColumns += data.getColumnLabel(i);
-                if (i < (data.getNumberOfColumns() - 1)) {
-                    csvColumns += ',';
-                }
-            }
-            csvColumns += '\n';
-
-            csvContent = csvColumns + google.visualization.dataTableToCsv(data);
-
-            filename = 'lightcurve_'+id+'.csv';
-            downloadLink = document.createElement('a');
-            downloadLink.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvContent);
-            downloadLink.download = filename;
-            raiseEvent(downloadLink, 'click');
-        });
-
-        function raiseEvent(element, eventType) {
-            var eventRaised;
-            if(document.createEvent) {
-                eventRaised = document.createEvent('MouseEvents');
-                eventRaised.initEvent(eventType, true, false);
-                element.dispatchEvent(eventRaised);
-            } else if (document.createEventObject) {
-                eventRaised = document.createEventObject();
-                element.fireEvent('on' + eventType, eventRaised);
-            }
-        }
-    }
- 
-    google.charts.setOnLoadCallback(draw);
-
-</script>
-
-<div class="container-fluid">
-    <input type="hidden" name="idH" value="{{id}}">
-    <input type="hidden" name="indexH" value="{{index}}">
-    <div class="row align-items-center">
-        <div class="col d-flex align-items-center justify-content-center">
-            <div id="lightcurve" style="width: 100%; height: 550px; z-index: 0"></div>
+    <!-- Single / Comparison chart area -->
+    <div id="chartArea">
+      <!-- single mode -->
+      <div id="singleWrap" class="chart-wrap">
+        <div id="chartPlaceholder" class="chart-placeholder">
+          <div class="sagan-spinner" style="margin:0 auto 0.75rem;"></div>
+          <span style="font-size:0.875rem; color:var(--text-muted);">Renderizando gráfico…</span>
         </div>
-    </div>
-    <div class="row align-items-center justify-content-center">
-        <div class="col d-flex align-items-center justify-content-center">
-            <div class="toolBar" style="background-color: #5B3FBF; width: 90%; height: 70px; border-radius: 5px;">
-                <div class="btn-toolbar justify-content-between" role="toolbar">
-                    <div class="btn-group btn-group-lg" role="group" style="margin-left: 10px; margin-top: 10px;">
-                        <a class="btn btn-light" id="csv-button">
-                            Baixar CSV
-                        </a>
-                        <a class="btn btn-light" id="png-btn" href="/" download="" role="button">
-                            Baixar PNG
-                        </a>
-                    </div>
-                    <div class="btn-group btn-group-lg" role="group" style="margin-right: 10px; margin-top: 10px;">
-                        <button id="btnGroupDrop1" type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Funções
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                            <a class="dropdown-item" id="fold-btn" href="/app/objeto/to_periodogram/{{id}}/{{index}}">Função Periodograma</a>
-                        </div>
-                    </div>
-                </div>
+        <div id="lightcurve"></div>
+      </div>
+
+      <!-- comparison mode (hidden by default) -->
+      <div id="compareWrap" style="display:none;">
+        <div class="compare-grid">
+          <div class="compare-panel">
+            <div class="compare-label">Original</div>
+            <div class="chart-wrap" style="min-height:320px;">
+              <div id="chartOriginal"></div>
             </div>
-        </div>       
+          </div>
+          <div class="compare-panel">
+            <div class="compare-label">Com funções aplicadas</div>
+            <div class="chart-wrap" style="min-height:320px;">
+              <div id="chartModified"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <div class="chart-toolbar">
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn-tool" id="csv-button">
+          <i class="fa-solid fa-file-csv"></i> CSV
+        </button>
+        <a class="btn-tool" id="png-btn" href="#" download="lightcurve_{{ id }}.png">
+          <i class="fa-solid fa-image"></i> PNG
+        </a>
+        <button class="btn-tool" id="compareToggle" onclick="toggleCompare()">
+          <i class="fa-solid fa-columns"></i> Comparar
+        </button>
+      </div>
+
+      <div class="dropdown">
+        <button class="btn-tool" data-bs-toggle="dropdown">
+          <i class="fa-solid fa-flask"></i> Ferramentas <i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-sagan">
+          <li>
+            <a class="dropdown-item-sagan" href="{% url 'folded' ticID=id ind=index %}">
+              <i class="fa-solid fa-wave-square" style="width:16px;"></i> Periodograma automático
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item-sagan" href="{% url 'tutorial' %}">
+              <i class="fa-solid fa-book-open" style="width:16px;"></i> Como usar
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item-sagan" href="{% url 'theory' %}">
+              <i class="fa-solid fa-atom" style="width:16px;"></i> Teoria
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Analysis panel ──────────────────────────────────────── -->
+  <div class="analysis-card">
+    <div class="analysis-header" onclick="togglePanel()" style="cursor:pointer;">
+      <div class="d-flex align-items-center gap-2">
+        <i class="fa-solid fa-sliders" style="color:var(--purple);"></i>
+        <span class="analysis-title">Painel de Análise</span>
+        <span class="analysis-subtitle" id="funcCountBadge" style="display:none;"></span>
+      </div>
+      <i class="fa-solid fa-chevron-down analysis-toggle-icon" id="panelIcon"></i>
+    </div>
+
+    <div id="analysisPanel">
+      <div class="analysis-body">
+
+        <!-- Left: function selector -->
+        <div class="func-selector-col">
+          <label class="func-label">Função</label>
+          <select id="funcSelect" class="filter-select w-100" onchange="onFuncChange()">
+            <option value="">— Selecionar função —</option>
+            {% for key, fn in lc_functions.items %}
+            <option value="{{ key }}">{{ fn.label }}</option>
+            {% endfor %}
+          </select>
+
+          <div id="funcDesc" class="func-desc"></div>
+
+          <!-- Parameter sections — rendered per function -->
+          {% for key, fn in lc_functions.items %}
+          <div id="params-{{ key }}" class="func-params" style="display:none;">
+            {% for p in fn.params %}
+            <div class="param-row">
+              <label class="param-label" for="param-{{ key }}-{{ p.name }}">{{ p.label }}</label>
+              {% if p.type == "select" %}
+              <select id="param-{{ key }}-{{ p.name }}" name="{{ p.name }}" class="filter-select w-100">
+                {% for val, lbl in p.options %}
+                <option value="{{ val }}">{{ lbl }}</option>
+                {% endfor %}
+              </select>
+              {% else %}
+              <input
+                id="param-{{ key }}-{{ p.name }}"
+                name="{{ p.name }}"
+                type="{{ p.type }}"
+                class="search-input"
+                {% if p.default != "" %}value="{{ p.default }}"{% endif %}
+                {% if p.min is not None %}min="{{ p.min }}"{% endif %}
+                {% if p.max is not None %}max="{{ p.max }}"{% endif %}
+                {% if p.step is not None %}step="{{ p.step }}"{% endif %}
+                {% if p.placeholder is not None %}placeholder="{{ p.placeholder }}"{% endif %}
+              >
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+          {% endfor %}
+
+          <div id="funcError" class="func-error" style="display:none;"></div>
+
+          <button class="btn-apply" id="applyBtn" onclick="applyFunction()" disabled>
+            <i class="fa-solid fa-play me-1"></i>Aplicar função
+          </button>
+        </div>
+
+        <!-- Right: applied functions -->
+        <div class="func-history-col">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <label class="func-label">Funções aplicadas</label>
+            <div class="d-flex gap-2">
+              <button class="btn-hist-action" id="resetBtn" onclick="resetLC()" title="Restaurar original">
+                <i class="fa-solid fa-rotate-left"></i> Restaurar
+              </button>
+            </div>
+          </div>
+
+          <div id="funcList" class="func-list">
+            <div class="func-empty" id="funcEmpty">
+              <i class="fa-solid fa-layer-group" style="opacity:.3; font-size:1.25rem;"></i>
+              <span>Nenhuma função aplicada</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Loading indicator for AJAX -->
+      <div id="funcLoading" class="func-loading" style="display:none;">
+        <div class="sagan-spinner sagan-spinner-sm"></div>
+        <span>Processando…</span>
+      </div>
+    </div>
+  </div>
+
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // ── Initial data ─────────────────────────────────────────────────────────
+  // Curva base (normalizada) e estado atual. O pipeline de funções fica no
+  // navegador e é reenviado a cada alteração: o servidor não guarda estado.
+  var BASE_X = {{ base_x|safe }};
+  var BASE_Y = {{ base_y|safe }};
+  var currentX = {{ x|safe }};
+  var currentY = {{ y|safe }};
+  var xLabel   = "{{ x_label|escapejs }}";
+  var yLabel   = "{{ y_label|escapejs }}";
+  var appliedFunctions = {{ pipeline_json|safe }};
+  var compareMode = false;
+  var mainChart = null, origChart = null, modChart = null;
+
+  var PROCESS_URL = "{% url 'lc_process' ticID=id ind=index %}";
+  var CSRF        = "{{ csrf_token }}";
+
+  // ── Google Charts ─────────────────────────────────────────────────────────
+  google.charts.load('current', { packages: ['corechart'], language: 'pt-br' });
+  google.charts.setOnLoadCallback(function () { drawAll(currentX, currentY, xLabel); });
+  document.addEventListener('DOMContentLoaded', renderFuncList);
+
+  function buildDataTable(x, y) {
+    var dt = new google.visualization.DataTable();
+    dt.addColumn('number', xLabel);
+    dt.addColumn('number', yLabel);
+    for (var i = 0; i < x.length; i++) {
+      if (y[i] === null || y[i] === undefined) continue;
+      var yv = typeof y[i] === 'string' ? parseFloat(y[i]) : y[i];
+      if (!isFinite(yv)) continue;
+      dt.addRow([x[i], yv]);
+    }
+    return dt;
+  }
+
+  function chartOptions(xl, yl) {
+    return {
+      title: '', curveType: 'none', legend: 'none',
+      pointShape: 'circle', pointSize: 2, lineWidth: 0,
+      hAxis: {
+        title: xl,
+        titleTextStyle: { fontName: 'Inter', fontSize: 11, color: '#6B7280', bold: false },
+        textStyle: { fontName: 'Inter', fontSize: 10, color: '#9CA3AF' },
+        gridlines: { color: '#F3F4F6' }, baselineColor: '#E5E7EB',
+      },
+      vAxis: {
+        title: yl,
+        titleTextStyle: { fontName: 'Inter', fontSize: 11, color: '#6B7280', bold: false },
+        textStyle: { fontName: 'Inter', fontSize: 10, color: '#9CA3AF' },
+        gridlines: { color: '#F3F4F6' }, baselineColor: '#E5E7EB',
+      },
+      colors: ['#5B3FBF'],
+      backgroundColor: { fill: 'transparent' },
+      chartArea: { left: 72, top: 20, right: 20, bottom: 52, width: '100%', height: '100%' },
+      explorer: { keepInBounds: true, maxZoomOut: 1, maxZoomIn: 0.01 },
+    };
+  }
+
+  function drawAll(x, y, xl) {
+    var dt  = buildDataTable(x, y);
+    var opt = chartOptions(xl, yLabel);
+
+    if (!mainChart) {
+      mainChart = new google.visualization.ScatterChart(document.getElementById('lightcurve'));
+    }
+    mainChart.draw(dt, opt);
+    document.getElementById('chartPlaceholder').classList.add('hidden');
+
+    // PNG
+    google.visualization.events.addListener(mainChart, 'ready', function () {
+      document.getElementById('png-btn').setAttribute('href', mainChart.getImageURI());
+    });
+
+    if (compareMode) drawCompare();
+
+    // CSV
+    document.getElementById('csv-button').onclick = function () {
+      var csv = 'X,Y\n' + google.visualization.dataTableToCsv(dt);
+      var a = document.createElement('a');
+      a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+      a.download = 'lightcurve_{{ id }}.csv';
+      a.dispatchEvent(new MouseEvent('click'));
+    };
+
+    window.onresize = function () {
+      if (mainChart) mainChart.draw(dt, opt);
+      if (compareMode) drawCompare();
+    };
+  }
+
+  function drawCompare() {
+    var dtOrig = buildDataTable(BASE_X, BASE_Y);
+    var dtMod  = buildDataTable(currentX, currentY);
+    var optOrig = chartOptions("Dias — BJD (original)", "Fluxo normalizado");
+    var optMod  = chartOptions(xLabel, yLabel);
+
+    if (!origChart) origChart = new google.visualization.ScatterChart(document.getElementById('chartOriginal'));
+    if (!modChart)  modChart  = new google.visualization.ScatterChart(document.getElementById('chartModified'));
+    origChart.draw(dtOrig, optOrig);
+    modChart.draw(dtMod, optMod);
+  }
+
+  // ── Compare toggle ────────────────────────────────────────────────────────
+  function toggleCompare() {
+    compareMode = !compareMode;
+    document.getElementById('singleWrap').style.display  = compareMode ? 'none' : 'block';
+    document.getElementById('compareWrap').style.display = compareMode ? 'block' : 'none';
+    document.getElementById('compareToggle').classList.toggle('btn-tool-active', compareMode);
+    if (compareMode) drawCompare();
+  }
+
+  // ── Analysis panel toggle ─────────────────────────────────────────────────
+  function togglePanel() {
+    var panel = document.getElementById('analysisPanel');
+    var icon  = document.getElementById('panelIcon');
+    var open  = panel.style.display !== 'none';
+    panel.style.display = open ? 'none' : 'block';
+    icon.style.transform = open ? 'rotate(-90deg)' : '';
+  }
+
+  // ── Function selector ─────────────────────────────────────────────────────
+  var funcDescriptions = {
+    {% for key, fn in lc_functions.items %}
+    "{{ key }}": "{{ fn.desc|escapejs }}",
+    {% endfor %}
+  };
+
+  function onFuncChange() {
+    var val = document.getElementById('funcSelect').value;
+    document.querySelectorAll('.func-params').forEach(function (el) { el.style.display = 'none'; });
+    document.getElementById('funcDesc').textContent = '';
+    document.getElementById('funcError').style.display = 'none';
+    document.getElementById('applyBtn').disabled = !val;
+
+    if (val) {
+      var block = document.getElementById('params-' + val);
+      if (block) block.style.display = 'block';
+      document.getElementById('funcDesc').textContent = funcDescriptions[val] || '';
+    }
+  }
+
+  // ── Pipeline ──────────────────────────────────────────────────────────────
+  function sendPipeline(pipeline, failMsg) {
+    setLoading(true);
+    hideError();
+    $.post(PROCESS_URL, {
+      csrfmiddlewaretoken: CSRF,
+      pipeline: JSON.stringify(pipeline.map(function (f) { return { name: f.name, params: f.params }; })),
+    }, function (data) {
+      setLoading(false);
+      if (data.error) { showError(data.error); return; }
+      updateState(data);
+    }).fail(function (xhr) {
+      setLoading(false);
+      var msg = failMsg;
+      try { msg = JSON.parse(xhr.responseText).error || msg; } catch (e) {}
+      showError(msg);
+    });
+  }
+
+  // ── Apply function ────────────────────────────────────────────────────────
+  function applyFunction() {
+    var func = document.getElementById('funcSelect').value;
+    if (!func) return;
+
+    var params = {};
+    var block  = document.getElementById('params-' + func);
+    if (block) {
+      block.querySelectorAll('input, select').forEach(function (el) {
+        if (el.name && el.value.trim()) params[el.name] = el.value.trim();
+      });
+    }
+    sendPipeline(appliedFunctions.concat([{ name: func, params: params }]), 'Erro ao aplicar função.');
+  }
+
+  // ── Remove specific function ──────────────────────────────────────────────
+  function removeFunction(idx) {
+    var next = appliedFunctions.filter(function (_, i) { return i !== idx; });
+    sendPipeline(next, 'Erro ao remover função.');
+  }
+
+  // ── Reset (sem requisição: a curva base já está na página) ────────────────
+  function resetLC() {
+    hideError();
+    updateState({
+      x: BASE_X, y: BASE_Y,
+      x_label: "Dias — Barycentric Julian Date (BJD)",
+      y_label: "Fluxo normalizado",
+      functions: [],
+    });
+  }
+
+  // ── State update ──────────────────────────────────────────────────────────
+  function updateState(data) {
+    currentX         = data.x;
+    currentY         = data.y;
+    xLabel           = data.x_label;
+    yLabel           = data.y_label;
+    appliedFunctions = data.functions;
+
+    drawAll(currentX, currentY, xLabel);
+    renderFuncList();
+  }
+
+  function renderFuncList() {
+    var list  = document.getElementById('funcList');
+    var empty = document.getElementById('funcEmpty');
+    var badge = document.getElementById('funcCountBadge');
+
+    if (!appliedFunctions || appliedFunctions.length === 0) {
+      empty.style.display = 'flex';
+      badge.style.display = 'none';
+      list.querySelectorAll('.func-tag').forEach(function (el) { el.remove(); });
+      return;
+    }
+
+    empty.style.display = 'none';
+    badge.style.display = 'inline-flex';
+    badge.textContent   = appliedFunctions.length + ' função' + (appliedFunctions.length > 1 ? 'ões' : '');
+
+    // Re-render tags
+    list.querySelectorAll('.func-tag').forEach(function (el) { el.remove(); });
+    appliedFunctions.forEach(function (fn, i) {
+      var paramStr = Object.entries(fn.params || {})
+        .map(function (kv) { return kv[1]; }).join(', ');
+      var tag = document.createElement('div');
+      tag.className = 'func-tag';
+      tag.innerHTML =
+        '<span class="func-tag-num">' + (i + 1) + '</span>' +
+        '<span class="func-tag-label">' + escapeHtml(fn.label) + '</span>' +
+        (paramStr ? '<span class="func-tag-params">' + escapeHtml(paramStr) + '</span>' : '') +
+        '<button class="func-tag-remove" onclick="removeFunction(' + i + ')" title="Remover esta função">' +
+        '<i class="fa-solid fa-xmark"></i></button>';
+      list.appendChild(tag);
+    });
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function setLoading(on) {
+    document.getElementById('funcLoading').style.display = on ? 'flex' : 'none';
+    document.getElementById('applyBtn').disabled = on || !document.getElementById('funcSelect').value;
+  }
+  function showError(msg) {
+    var el = document.getElementById('funcError');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+  function hideError() {
+    document.getElementById('funcError').style.display = 'none';
+  }
+</script>
 {% endblock %}

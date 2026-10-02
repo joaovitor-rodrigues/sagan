@@ -1,53 +1,59 @@
 {% extends 'app/index.html' %}
-{% load static %}
 
 {% block title %}Sobre{% endblock %}
+{% block nav_about %}active{% endblock %}
 
 {% block content %}
-<style>
-    body{
-        background: url("{% static 'app/media/universe_background.jpg' %}") fixed;
-        background-size: cover;
-        background-repeat: no-repeat;
-    }
-    h1{
-        font-family: 'Inter';
-        font-style: normal;
-        color: #FFFFFF;
-        text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.35);
-        text-align: center;
-    }
-    p{
-        font-family: 'Inter';
-        font-style: normal;
-        font-size: 20px;
-        color: #FFFFFF;
-        text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.35);
-        text-align: justify;
-    }
-    .container{
-        margin-top: 20px;
-    }
-</style>
+<div class="about-page">
+  <div class="about-content page-fade">
 
-<div class="container" style="width: 100%;">
-    <div class="row align-items-center">
-        <div class="col"></div>
-        <div class="col-6">
-            <h1>O Projeto</h1>
-        </div>
-        <div class="col"></div>
+    <div class="about-card">
+      <p class="about-section-title">O Projeto</p>
+      <h1 class="about-title">SAGAN</h1>
+
+      <p class="about-text">
+        O avanço científico e tecnológico nos permite explorar novos conceitos que antes seriam impossíveis.
+        Na astronomia, esse fator é visivelmente perceptível — nas últimas décadas houve um aumento exponencial
+        na descoberta de exoplanetas, corpos planetários fora de nosso sistema solar.
+      </p>
+      <p class="about-text">
+        Com o método de trânsito, utilizado pelo telescópio espacial TESS, é possível identificar exoplanetas
+        através de variações periódicas no brilho de uma estrela. O SAGAN centraliza esses dados e disponibiliza
+        ferramentas para análise de curvas de luz diretamente no navegador, conectando-se em tempo real
+        aos arquivos da NASA (<strong style="color:rgba(255,255,255,0.9)">IPAC</strong> e
+        <strong style="color:rgba(255,255,255,0.9)">MAST</strong>).
+      </p>
+
+      <hr style="border-color:rgba(255,255,255,.1); margin: 1.75rem 0;">
+
+      <p class="about-section-title">Tecnologias</p>
+      <div class="tech-grid">
+        <div class="tech-chip">Python 3.13</div>
+        <div class="tech-chip">Django 5.2</div>
+        <div class="tech-chip">Lightkurve</div>
+        <div class="tech-chip">Pandas</div>
+        <div class="tech-chip">Bootstrap 5</div>
+        <div class="tech-chip">Google Charts</div>
+        <div class="tech-chip">jQuery</div>
+        <div class="tech-chip">NASA MAST</div>
+        <div class="tech-chip">ExoFOP IPAC</div>
+      </div>
+
+      <hr style="border-color:rgba(255,255,255,.1); margin: 1.75rem 0;">
+
+      <p class="about-section-title">Referência</p>
+      <p class="about-text" style="font-size:0.875rem;">
+        O nome SAGAN é uma homenagem ao astrônomo Carl Sagan, pioneiro na busca por vida extraterrestre.
+        É também uma sigla: <em>Search, Ask, Gather, Analyze, Now</em>.
+      </p>
+
+      <div style="margin-top:1.5rem;">
+        <a href="https://github.com/joaovitor-rodrigues/sagan" target="_blank" class="btn-tool" style="display:inline-flex;">
+          <i class="fa-brands fa-github"></i> Ver código no GitHub
+        </a>
+      </div>
     </div>
-    <br>
-    <div class="row align-items-center">
-        <div class="col"></div>
-        <div class="col-8">
-            <p>
-                O avanço científico e tecnológico nos vem permitindo explorar novos conceitos e temáticas que não o poderiam ser antes. Na área da astronomia esse fator é visivelmente perceptível. Nas últimas décadas pudemos constatar o aumento exponencial na descoberta de exoplanetas - isto é, corpos planetários fora de nosso sistema solar. Isso se deve não somente ao avanço tecnológico, mas também à democratização da ciência. A globalização permitiu maior rapidez na troca de conhecimento e o aumento na produção científica interdisciplinar. Em função disso, o processamento de quantidades massivas de informações pode ser dividido entre diversos pontos de pesquisa pelo mundo. O reflexo disso no estudo de exoplanetas foi o aumento em suas detecções.<br><br> Com o desenvolvimento de métodos de detecção como o trânsito, foi possível realizar novas descobertas de exoplanetas a partir da análise de assinaturas próprias conhecidas como curvas de luz. O problema reside na quantidade exorbitante de dados referentes a essas curvas. Nesse contexto, o projeto SAGAN tem como objetivo centralizar esse aglomerado de informações em um espaço voltado para sua análise, bem como disponibilizar ferramentas próprias que auxiliem o usuário durante a sua investigação. <br><br>O software foi desenvolvido como uma plataforma web, utilizando as linguagens conhecidas de front-end como HTML, CSS e JavaScript. Os dados referentes às observações de exoplanetas e suas curvas de luz foram coletados de dois bancos de dados externos, o IPAC e o MAST, ambos vinculados e/ou financiados pela NASA. Para interação entre a parte visual da plataforma e os dados a serem trabalhados foi utilizado a linguagem de programação Python, juntamente ao framework Django. As funções específicas de manuseio dos dados foram desenvolvidas utilizando a biblioteca escrita em Python, Lightkurve. A plataforma permite ao usuário localizar as observações de possíveis exoplanetas no banco de dados, e em seguida retornar as curvas de luz referentes ao objeto selecionado. A partir disso é possível manusear os gráficos gerados utilizando as ferramentas disponibilizadas na plataforma, e por fim exportá-los.
-            </p>
-        </div>
-        <div class="col"></div>
-    </div>
+
+  </div>
 </div>
-
 {% endblock %}

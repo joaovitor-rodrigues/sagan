@@ -1,0 +1,230 @@
+{% extends 'app/index.html' %}
+
+{% block title %}Teoria{% endblock %}
+{% block nav_theory %}active{% endblock %}
+
+{% block content %}
+<div class="page-container page-fade" style="max-width:860px;">
+
+  <div class="page-header">
+    <h1>Teoria — Trânsitos e Exoplanetas</h1>
+    <p>Conceitos científicos por trás dos dados do TESS e como interpretar uma curva de luz.</p>
+  </div>
+
+  <div class="docs-body">
+
+    <!-- Exoplanets -->
+    <div class="docs-section">
+      <h2 class="docs-section-title">O que são exoplanetas?</h2>
+      <p>Exoplanetas são planetas que orbitam estrelas fora do nosso sistema solar. Desde a primeira confirmação nos anos 1990, mais de 5.000 exoplanetas foram descobertos — e o TESS expandiu esse catálogo exponencialmente.</p>
+      <p>Diferente dos planetas do sistema solar, exoplanetas não podem ser fotografados diretamente na maioria dos casos — são detectados por métodos indiretos, como o <strong>método de trânsito</strong>.</p>
+    </div>
+
+    <!-- Transit method -->
+    <div class="docs-section">
+      <h2 class="docs-section-title">O Método de Trânsito</h2>
+      <p>Quando um planeta passa em frente à sua estrela (a partir da perspectiva da Terra), ele bloqueia uma pequena fração da luz estelar. Essa diminuição periódica no brilho é chamada de <strong>trânsito</strong>.</p>
+
+      <div class="theory-diagram">
+        <div class="theory-diagram-inner">
+          <div class="diagram-star">★</div>
+          <div class="diagram-orbit">
+            <div class="diagram-planet">●</div>
+          </div>
+          <div class="diagram-arrow">→</div>
+          <div class="diagram-lc">
+            <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+              <polyline points="0,20 60,20 75,55 90,55 105,20 200,20"
+                fill="none" stroke="#5B3FBF" stroke-width="2.5" stroke-linejoin="round"/>
+              <line x1="0" y1="20" x2="200" y2="20" stroke="#DDD6FE" stroke-width="1" stroke-dasharray="4"/>
+            </svg>
+          </div>
+        </div>
+        <p class="diagram-caption">Quando o planeta transita, o fluxo cai brevemente — essa "mordida" na curva de luz é a assinatura do planeta.</p>
+      </div>
+
+      <div class="theory-info-grid">
+        <div class="theory-info-card">
+          <div class="theory-info-title">Profundidade do trânsito</div>
+          <p>Indica a fração de luz bloqueada. É proporcional à razão entre as áreas do planeta e da estrela: <em>δ = (R_p / R_★)²</em>. Um trânsito de 1% significa que o planeta tem ~10% do raio da estrela.</p>
+        </div>
+        <div class="theory-info-card">
+          <div class="theory-info-title">Período orbital</div>
+          <p>É o intervalo de tempo entre dois trânsitos consecutivos. Equivale ao "ano" do exoplaneta — o tempo que leva para completar uma órbita em torno da sua estrela.</p>
+        </div>
+        <div class="theory-info-card">
+          <div class="theory-info-title">Duração do trânsito</div>
+          <p>Depende do tamanho da estrela e da velocidade orbital do planeta. Trânsitos típicos de planetas detectados pelo TESS duram de 1 a 8 horas.</p>
+        </div>
+        <div class="theory-info-card">
+          <div class="theory-info-title">Época (T₀)</div>
+          <p>É o tempo do primeiro trânsito observado (em BJD). Junto com o período, define quando os próximos trânsitos ocorrem: <em>Tₙ = T₀ + n × P</em>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TESS mission -->
+    <div class="docs-section">
+      <h2 class="docs-section-title">A Missão TESS</h2>
+      <p>O <strong>Transiting Exoplanet Survey Satellite (TESS)</strong> é um telescópio espacial da NASA lançado em 2018. Ele observa o céu em setores de 27 dias cada, cobrindo quase todo o céu em dois anos.</p>
+      <ul class="docs-list">
+        <li>Monitora mais de 200.000 estrelas brilhantes em busca de trânsitos.</li>
+        <li>Gera curvas de luz com cadência de 2 minutos ou 30 minutos.</li>
+        <li>Os dados são armazenados no arquivo <strong>MAST</strong> (Mikulski Archive for Space Telescopes) e são públicos.</li>
+        <li>Cada setor cobre uma faixa de ~24° × 96° do céu.</li>
+      </ul>
+    </div>
+
+    <!-- Light curve reading -->
+    <div class="docs-section">
+      <h2 class="docs-section-title">Como Ler uma Curva de Luz</h2>
+      <p>O eixo X é o tempo em <strong>BJD (Barycentric Julian Date)</strong> — dias contados a partir de um ponto de referência, corrigidos para o baricentro do Sistema Solar. O eixo Y é o <strong>fluxo normalizado</strong>: o brilho da estrela dividido pela mediana, então o valor "1.0" representa o brilho típico.</p>
+
+      <div class="docs-tip">
+        <i class="fa-solid fa-eye" style="color:var(--purple);"></i>
+        <span>Procure por quedas repetidas no fluxo com a mesma profundidade e espaçamento — essa é a assinatura clássica de um planeta em trânsito.</span>
+      </div>
+
+      <p>Além dos trânsitos, curvas de luz podem mostrar:</p>
+      <ul class="docs-list">
+        <li><strong>Variabilidade estelar:</strong> oscilações lentas causadas pela rotação da estrela e manchas estelares.</li>
+        <li><strong>Flares (erupções):</strong> picos bruscos de brilho causados por atividade magnética.</li>
+        <li><strong>Artefatos instrumentais:</strong> saltos ou lacunas no início/fim de setores ou por saturação.</li>
+        <li><strong>Binárias eclipsantes:</strong> quedas profundas e assimétricas causadas por duas estrelas em órbita mútua.</li>
+      </ul>
+    </div>
+
+    <!-- Catalog fields -->
+    <div class="docs-section">
+      <h2 class="docs-section-title">Campos do Catálogo</h2>
+
+      <div class="theory-table-wrap">
+        <table class="theory-table">
+          <thead>
+            <tr><th>Campo</th><th>Descrição</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>TIC ID</strong></td>
+              <td>Identificador único no TESS Input Catalog. É o número de referência da estrela hospedeira.</td>
+            </tr>
+            <tr>
+              <td><strong>TOI</strong></td>
+              <td>TESS Object of Interest — número sequencial atribuído ao candidato planetário pelo time do TESS.</td>
+            </tr>
+            <tr>
+              <td><strong>Período (dias)</strong></td>
+              <td>Período orbital estimado do candidato, em dias terrestres.</td>
+            </tr>
+            <tr>
+              <td><strong>Raio Estelar (R☉)</strong></td>
+              <td>Raio da estrela em unidades de raios solares. Combinado com a profundidade do trânsito, estima o raio do planeta.</td>
+            </tr>
+            <tr>
+              <td><strong>Massa Estelar (M☉)</strong></td>
+              <td>Massa da estrela em massas solares. Junto com o período, estima a distância orbital pela 3ª Lei de Kepler.</td>
+            </tr>
+            <tr>
+              <td><strong>Data Identificação</strong></td>
+              <td>Quando o objeto foi primeiro reportado como candidato (TOI Alert).</td>
+            </tr>
+            <tr>
+              <td><strong>Fonte</strong></td>
+              <td>Pipeline que gerou a detecção (ex: SPOC — Science Processing Operations Center; QLP — Quick Look Pipeline).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Dispositions -->
+    <div class="docs-section">
+      <h2 class="docs-section-title">Disposições (Classificações)</h2>
+      <p>A <strong>disposição</strong> indica o grau de confiança de que o objeto é um planeta genuíno, após análise pela comunidade científica:</p>
+
+      <div class="theory-disposition-grid">
+        <div class="theory-disp-card">
+          <span class="badge-disposition badge-kp" style="font-size:0.875rem; padding:.3rem .8rem;">KP</span>
+          <div>
+            <strong>Known Planet (Planeta Confirmado)</strong>
+            <p>O exoplaneta foi confirmado por métodos independentes (velocidade radial, análise estatística, etc.). É a classificação mais confiável.</p>
+          </div>
+        </div>
+        <div class="theory-disp-card">
+          <span class="badge-disposition badge-cp" style="font-size:0.875rem; padding:.3rem .8rem;">CP</span>
+          <div>
+            <strong>Confirmed Planet (Planeta Confirmado)</strong>
+            <p>Confirmação pela comunidade exoplanetária, geralmente publicada em artigo científico revisado por pares.</p>
+          </div>
+        </div>
+        <div class="theory-disp-card">
+          <span class="badge-disposition badge-pc" style="font-size:0.875rem; padding:.3rem .8rem;">PC</span>
+          <div>
+            <strong>Planet Candidate (Candidato Planetário)</strong>
+            <p>O sinal é consistente com um trânsito planetário mas ainda não foi confirmado. A maioria dos objetos do TESS está nesta categoria.</p>
+          </div>
+        </div>
+        <div class="theory-disp-card">
+          <span class="badge-disposition badge-fp" style="font-size:0.875rem; padding:.3rem .8rem;">FP</span>
+          <div>
+            <strong>False Positive (Falso Positivo)</strong>
+            <p>O sinal foi descartado — geralmente é uma binária eclipsante em fundo, contaminação de estrela vizinha, ou artefato instrumental.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Functions explanation -->
+    <div class="docs-section">
+      <h2 class="docs-section-title">Funções de Análise — Teoria</h2>
+
+      <div class="theory-func-section">
+        <h3 class="theory-func-title">Flatten (Achatar)</h3>
+        <p>Aplica um filtro <strong>Savitzky-Golay</strong> para modelar e remover a variação de baixa frequência do brilho estelar (chamada de <em>systematics</em> ou variabilidade intrínseca). O filtro ajusta um polinômio local dentro de uma janela deslizante.</p>
+        <ul class="docs-list">
+          <li><strong>window_length:</strong> tamanho da janela em pontos de dados. Janelas maiores removem variações mais lentas; menores preservam mais estrutura.</li>
+          <li><strong>polyorder:</strong> grau do polinômio ajustado. Valores maiores seguem variações mais complexas.</li>
+        </ul>
+        <div class="docs-tip">
+          <i class="fa-solid fa-lightbulb" style="color:var(--purple);"></i>
+          <span>Para trânsitos típicos do TESS, window_length entre 51 e 201 é um bom ponto de partida. Use janelas menores que a duração do trânsito para não distorcê-lo.</span>
+        </div>
+      </div>
+
+      <div class="theory-func-section">
+        <h3 class="theory-func-title">Fold (Dobrar)</h3>
+        <p>A dobragem de fase transforma o eixo de tempo em <strong>fase</strong> (0 a 1, ou -0.5 a 0.5). Todos os pontos separados por um múltiplo inteiro do período ficam na mesma fase.</p>
+        <p>Resultado: se o período estiver correto, todos os trânsitos se alinham e a forma do trânsito fica muito mais nítida. Se o período estiver errado, os pontos ficam espalhados sem padrão.</p>
+      </div>
+
+      <div class="theory-func-section">
+        <h3 class="theory-func-title">Bin (Agrupar)</h3>
+        <p>Divide o eixo de tempo em bins de tamanho fixo e calcula a média (ou mediana ponderada) dos pontos em cada bin. Reduz ruído aleatório (ruído branco) em proporção a <em>√N</em>, onde N é o número de pontos por bin.</p>
+        <p>Essencial após o Fold: a curva dobrada tem muitos pontos sobrepostos — o binning revela a forma média do trânsito de forma limpa.</p>
+      </div>
+
+      <div class="theory-func-section">
+        <h3 class="theory-func-title">Remover Outliers</h3>
+        <p>Usa <strong>sigma clipping</strong> iterativo: calcula a mediana e o desvio padrão dos dados, remove pontos que estão além de N σ, e repete até convergir. Eficaz para remover flares, raios cósmicos e artefatos de leitura.</p>
+      </div>
+
+      <div class="theory-func-section">
+        <h3 class="theory-func-title">Periodograma (BLS)</h3>
+        <p>O <strong>Box Least Squares (BLS)</strong> é um método otimizado para detectar sinais de trânsito — variações em forma de caixa (box-shaped). Ele testa sistematicamente vários períodos e quantifica o quão bem um trânsito de caixa se ajusta aos dados em cada período.</p>
+        <p>O pico mais alto no periodograma indica o período mais provável. Em objetos com trânsito real, o pico é proeminente e bem definido; em falsos positivos ou variáveis, o espectro é mais ruidoso.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="docs-footer">
+    <a href="{% url 'tutorial' %}" class="btn-tool">
+      <i class="fa-solid fa-book-open"></i> Ver o guia de uso
+    </a>
+    <a href="{% url 'list' %}" class="btn-tool">
+      <i class="fa-solid fa-table"></i> Explorar objetos
+    </a>
+  </div>
+
+</div>
+{% endblock %}
