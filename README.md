@@ -9,7 +9,7 @@ A web platform for exploring **TESS exoplanet light curves** in the browser. SAG
 TESS Objects of Interest (TOI) catalog from NASA's ExoFOP archive, fetches each target's light curves
 from MAST, and lets you clean, fold and compare them interactively — no Python notebook required.
 
-**Live demo:** https://sagan-tess.vercel.app
+**Live demo:** https://sagan.joaovrodrigues.com.br
 
 > The interface is in Brazilian Portuguese. The name honors astronomer Carl Sagan.
 
