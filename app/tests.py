@@ -67,6 +67,18 @@ class StaticPagesTests(SimpleTestCase):
         resp = self.client.get("/")
         self.assertRedirects(resp, "/app/")
 
+    def test_theory_and_about_citations(self, _):
+        import re
+        for name in ("theory", "about"):
+            with self.subTest(page=name):
+                html = self.client.get(reverse(name)).content.decode()
+                anchors = set(re.findall(r'id="(ref-[a-z0-9]+)"', html))
+                cited = set(re.findall(r'href="#(ref-[a-z0-9]+)"', html))
+                self.assertTrue(cited)
+                self.assertEqual(cited - anchors, set(), "citação sem referência")
+                self.assertEqual(anchors - cited, set(), "referência nunca citada")
+                self.assertIn('class="sg-chart', html)
+
     def test_pages_render(self, _):
         for name in ("index", "about", "tutorial", "theory"):
             with self.subTest(page=name):

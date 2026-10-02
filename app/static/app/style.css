@@ -1361,3 +1361,95 @@ a:hover { color: var(--purple-hover); }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ============================================================
+   Figuras (Teoria / Sobre) — SVG gerado por scripts/make_figures.py
+   ============================================================ */
+.figure {
+  position: relative;
+  margin: 1.5rem 0;
+  padding: 1rem 1rem 0.85rem;
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.figure figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+.figure .fig-num { font-weight: 600; color: var(--text); }
+.figure .fig-source { display: block; margin-top: 0.25rem; color: var(--text-muted); font-size: 0.75rem; }
+.fig-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+@media (max-width: 640px) { .fig-pair { grid-template-columns: 1fr; } }
+
+.sg-chart { display: block; width: 100%; height: auto; font-family: 'Inter', system-ui, sans-serif; overflow: visible; }
+.sg-grid      { stroke: #ECE9F5; stroke-width: 1; }
+.sg-axis, .sg-tickmark { stroke: #CFC9E3; stroke-width: 1; }
+.sg-tick      { font-size: 11px; fill: #7A7196; font-variant-numeric: tabular-nums; }
+.sg-label     { font-size: 12px; fill: #52496B; }
+.sg-line      { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.sg-key       { stroke-width: 3; stroke-linecap: round; }
+.sg-legend    { font-size: 12px; fill: #52496B; }
+.sg-direct    { font-size: 12px; font-weight: 500; fill: #1A1625; }
+.sg-note      { font-size: 11px; fill: #7A7196; }
+.sg-ref       { stroke: #CFC9E3; stroke-width: 1; }
+.sg-gap       { fill: #F6F5FA; }
+.sg-cat       { font-size: 12.5px; fill: #1A1625; }
+.sg-value     { font-size: 12px; fill: #52496B; font-variant-numeric: tabular-nums; }
+.sg-bar       { cursor: default; transition: opacity .15s; }
+.sg-bar:hover { opacity: .8; }
+.sg-mark      { stroke: #fff; stroke-width: 2; }
+.sg-path      { stroke: #7A7196; stroke-width: 1.5; fill: none; }
+.sg-dim       { stroke: #7A7196; stroke-width: 1.2; }
+.sg-guide     { stroke: #E4E0F0; stroke-width: 1; }
+.sg-flow      { stroke: #7A7196; stroke-width: 1.5; }
+.sg-arrowhead { fill: #7A7196; }
+.sg-node        { fill: #fff; stroke: #CFC9E3; stroke-width: 1.2; }
+.sg-node-accent { fill: #F3F0FF; stroke: #7C5CDB; }
+.sg-node-good   { fill: #EEFBEF; stroke: #0ca30c; }
+.sg-node-bad    { fill: #FDF0F0; stroke: #d03b3b; }
+.sg-node-t    { font-size: 13px; font-weight: 600; fill: #1A1625; }
+.sg-node-s    { font-size: 11px; fill: #52496B; }
+.sg-cross     { stroke: #9991B5; stroke-width: 1; }
+.sg-hl        { stroke: #fff; stroke-width: 2; }
+.sg-tooltip {
+  position: absolute; z-index: 5; pointer-events: none;
+  transform: translate(-50%, calc(-100% - 12px));
+  background: #1A1625; color: #fff;
+  font-size: 12px; line-height: 1.3; padding: 0.35rem 0.6rem;
+  border-radius: 6px; white-space: nowrap;
+  opacity: 0; transition: opacity .1s;
+  font-variant-numeric: tabular-nums;
+}
+.sg-tooltip.on { opacity: 1; }
+.fig-data { margin-top: 0.5rem; font-size: 0.8125rem; }
+.fig-data summary { cursor: pointer; color: var(--purple); }
+.fig-data table { margin-top: 0.5rem; width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.fig-data td, .fig-data th { padding: 0.25rem 0.5rem; border-bottom: 1px solid var(--border); text-align: left; }
+.fig-data td:last-child, .fig-data th:last-child { text-align: right; }
+
+/* Equações e referências */
+.eq {
+  margin: 1rem 0; padding: 0.75rem 1rem;
+  background: var(--purple-faint); border-radius: var(--radius-sm);
+  font-family: 'Cambria Math', 'STIX Two Math', Georgia, serif; font-size: 1.05rem;
+  text-align: center; color: var(--text); overflow-x: auto;
+}
+.eq small { display: block; margin-top: 0.3rem; font-family: 'Inter', system-ui, sans-serif; font-size: 0.75rem; color: var(--text-muted); }
+.cite { font-size: 0.8em; vertical-align: super; line-height: 0; }
+.cite a { color: var(--purple); text-decoration: none; }
+.refs { padding-left: 1.4rem; }
+.refs li { font-size: 0.8125rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 0.45rem; }
+.refs li:target { background: var(--purple-faint); border-radius: 4px; }
+.refs a { color: var(--purple); word-break: break-word; }
+.fact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
+.fact { background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem 0.9rem; }
+.fact-value { font-size: 1.25rem; font-weight: 600; color: var(--text); }
+.fact-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.4; }
+.about-text a { color: #C4B5FD; }
+.about-card .figure { margin: 1.25rem 0; }
+.about-card .refs li { color: rgba(255,255,255,0.7); }
+.about-card .refs a { color: #C4B5FD; }
+.about-h2 { font-size: 1.05rem; font-weight: 600; color: #fff; margin: 1.75rem 0 0.6rem; }

@@ -1,4 +1,5 @@
 {% extends 'app/index.html' %}
+{% load static %}
 
 {% block title %}Sobre{% endblock %}
 {% block nav_about %}active{% endblock %}
@@ -12,16 +13,56 @@
       <h1 class="about-title">SAGAN</h1>
 
       <p class="about-text">
-        O avanço científico e tecnológico nos permite explorar novos conceitos que antes seriam impossíveis.
-        Na astronomia, esse fator é visivelmente perceptível — nas últimas décadas houve um aumento exponencial
-        na descoberta de exoplanetas, corpos planetários fora de nosso sistema solar.
+        O SAGAN é uma plataforma web para explorar, direto no navegador, as curvas de luz do telescópio espacial
+        <strong>TESS</strong><span class="cite"><a href="#ref-a7">7</a></span> e os milhares de candidatos a exoplaneta que ele encontrou. Uma tarefa que normalmente
+        exige um ambiente Python vira poucos cliques: achar um alvo, abrir uma observação, limpar e dobrar a curva
+        e ver o trânsito aparecer.
       </p>
       <p class="about-text">
-        Com o método de trânsito, utilizado pelo telescópio espacial TESS, é possível identificar exoplanetas
-        através de variações periódicas no brilho de uma estrela. O SAGAN centraliza esses dados e disponibiliza
-        ferramentas para análise de curvas de luz diretamente no navegador, conectando-se em tempo real
-        aos arquivos da NASA (<strong style="color:rgba(255,255,255,0.9)">IPAC</strong> e
-        <strong style="color:rgba(255,255,255,0.9)">MAST</strong>).
+        Em 2 de outubro de 2026, o catálogo de TESS Objects of Interest tinha 8.148 entradas, e três em cada quatro
+        ainda eram candidatos sem confirmação
+        <span class="cite"><a href="#ref-a1">1</a>,<a href="#ref-a2">2</a></span>. Boa parte do trabalho de
+        confirmação é acompanhamento pela comunidade<span class="cite"><a href="#ref-a3">3</a></span>. Abrir esses
+        dados para estudantes e curiosos é o objetivo do projeto.
+      </p>
+
+      <h2 class="about-h2">O que dá para fazer</h2>
+      <ul class="about-text" style="padding-left:1.2rem;">
+        <li>Buscar e filtrar o catálogo TOI, lido ao vivo do ExoFOP-TESS<span class="cite"><a href="#ref-a1">1</a></span>.</li>
+        <li>Listar as observações de cada estrela no arquivo MAST e abrir a curva de luz.</li>
+        <li>Aplicar e combinar as operações do Lightkurve<span class="cite"><a href="#ref-a4">4</a></span>: achatar, remover outliers, dobrar, agrupar, suavizar, normalizar e truncar.</li>
+        <li>Encontrar o período com um periodograma BLS<span class="cite"><a href="#ref-a5">5</a></span> e comparar a curva original com a processada.</li>
+        <li>Exportar o gráfico em PNG e os dados em CSV.</li>
+      </ul>
+      <p class="about-text">A página <a href="{% url 'theory' %}">Teoria</a> explica a física e cada ferramenta, com as fontes científicas; o <a href="{% url 'tutorial' %}">guia</a> mostra o passo a passo.</p>
+
+      <h2 class="about-h2">Como funciona</h2>
+      <figure class="figure">
+        {% include "app/figures/fig-arquitetura.svg" %}
+        <figcaption><span class="fig-num">Figura.</span> Arquitetura do SAGAN. O servidor não guarda estado: a lista de funções aplicadas fica no navegador e cada requisição é recalculada a partir da curva original, o que permite rodar como função serverless.</figcaption>
+      </figure>
+      <p class="about-text">
+        O backend é Django 5.2 em Python 3.13, publicado na Vercel. O catálogo TOI vem do ExoFOP-TESS e fica em cache
+        por uma hora. As curvas de luz são baixadas do MAST pelo Lightkurve<span class="cite"><a href="#ref-a4">4</a></span>,
+        a partir dos produtos do pipeline SPOC<span class="cite"><a href="#ref-a6">6</a></span> e de outros pipelines.
+        A interface usa Bootstrap e Google Charts. O código, os testes automatizados e o script que gera as figuras
+        estão no <a href="https://github.com/joaovitor-rodrigues/sagan" target="_blank" rel="noopener">GitHub</a>.
+      </p>
+
+      <h2 class="about-h2">Limites</h2>
+      <p class="about-text">
+        O SAGAN é uma ferramenta de exploração e ensino, não um pipeline de validação. As disposições exibidas são as
+        do catálogo oficial. O periodograma automático acha o período mais provável, mas não faz os testes de falso
+        positivo (centroide, profundidade par/ímpar, eclipse secundário) descritos pela equipe do TESS
+        <span class="cite"><a href="#ref-a3">3</a></span>.
+      </p>
+
+      <h2 class="about-h2">História</h2>
+      <p class="about-text">
+        O projeto começou em 2021–2022, hospedado em <a href="https://github.com/clebersfonseca/sagan" target="_blank" rel="noopener">clebersfonseca/sagan</a>,
+        com um catálogo estático em CSV e gráficos simples. Em 2026 foi modernizado: Django 4 → 5.2, catálogo ao vivo,
+        pipeline de análise, periodograma BLS, nova interface, arquitetura sem estado para serverless e testes.
+        O nome homenageia o astrônomo Carl Sagan e é também uma sigla: <em>Search, Ask, Gather, Analyze, Now</em>.
       </p>
 
       <hr style="border-color:rgba(255,255,255,.1); margin: 1.75rem 0;">
@@ -31,24 +72,35 @@
         <div class="tech-chip">Python 3.13</div>
         <div class="tech-chip">Django 5.2</div>
         <div class="tech-chip">Lightkurve</div>
+        <div class="tech-chip">Astropy</div>
         <div class="tech-chip">Pandas</div>
         <div class="tech-chip">Bootstrap 5</div>
         <div class="tech-chip">Google Charts</div>
-        <div class="tech-chip">jQuery</div>
-        <div class="tech-chip">NASA MAST</div>
-        <div class="tech-chip">ExoFOP IPAC</div>
+        <div class="tech-chip">Vercel</div>
       </div>
 
       <hr style="border-color:rgba(255,255,255,.1); margin: 1.75rem 0;">
 
-      <p class="about-section-title">Referência</p>
+      <p class="about-section-title">Créditos dos dados</p>
       <p class="about-text" style="font-size:0.875rem;">
-        O nome SAGAN é uma homenagem ao astrônomo Carl Sagan, pioneiro na busca por vida extraterrestre.
-        É também uma sigla: <em>Search, Ask, Gather, Analyze, Now</em>.
+        Este site usa dados coletados pela missão TESS, obtidos no arquivo MAST (Mikulski Archive for Space Telescopes)
+        do Space Telescope Science Institute. O financiamento da missão TESS vem do NASA Explorer Program. O catálogo
+        TOI vem do ExoFOP-TESS (NASA/IPAC). Ícones: Font Awesome (licença Free).
       </p>
 
+      <p class="about-section-title" style="margin-top:1.5rem;">Referências</p>
+      <ol class="refs">
+        <li id="ref-a1">ExoFOP-TESS — Exoplanet Follow-up Observing Program, NASA/IPAC. <a href="https://exofop.ipac.caltech.edu/tess/" target="_blank" rel="noopener">exofop.ipac.caltech.edu/tess</a> (acesso em 2 out. 2026).</li>
+        <li id="ref-a2">NASA Exoplanet Archive. <a href="https://exoplanetarchive.ipac.caltech.edu/" target="_blank" rel="noopener">exoplanetarchive.ipac.caltech.edu</a> (acesso em 2 out. 2026).</li>
+        <li id="ref-a3">Guerrero, N. M. et al. (2021). The TESS Objects of Interest Catalog from the TESS Prime Mission. <em>ApJS</em> 254, 39. <a href="https://doi.org/10.3847/1538-4365/abefe1" target="_blank" rel="noopener">doi:10.3847/1538-4365/abefe1</a></li>
+        <li id="ref-a4">Lightkurve Collaboration (2018). Lightkurve: Kepler and TESS time series analysis in Python. ascl:1812.013. <a href="https://ui.adsabs.harvard.edu/abs/2018ascl.soft12013L" target="_blank" rel="noopener">ADS</a></li>
+        <li id="ref-a5">Kovács, G.; Zucker, S.; Mazeh, T. (2002). A box-fitting algorithm in the search for periodic transits. <em>A&amp;A</em> 391, 369. <a href="https://doi.org/10.1051/0004-6361:20020802" target="_blank" rel="noopener">doi:10.1051/0004-6361:20020802</a></li>
+        <li id="ref-a6">Jenkins, J. M. et al. (2016). The TESS Science Processing Operations Center. <em>Proc. SPIE</em> 9913, 99133E. <a href="https://doi.org/10.1117/12.2233418" target="_blank" rel="noopener">doi:10.1117/12.2233418</a></li>
+        <li id="ref-a7">Ricker, G. R. et al. (2015). Transiting Exoplanet Survey Satellite. <em>JATIS</em> 1, 014003. <a href="https://doi.org/10.1117/1.JATIS.1.1.014003" target="_blank" rel="noopener">doi:10.1117/1.JATIS.1.1.014003</a></li>
+      </ol>
+
       <div style="margin-top:1.5rem;">
-        <a href="https://github.com/joaovitor-rodrigues/sagan" target="_blank" class="btn-tool" style="display:inline-flex;">
+        <a href="https://github.com/joaovitor-rodrigues/sagan" target="_blank" rel="noopener" class="btn-tool" style="display:inline-flex;">
           <i class="fa-brands fa-github"></i> Ver código no GitHub
         </a>
       </div>

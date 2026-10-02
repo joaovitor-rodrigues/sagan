@@ -1,0 +1,15 @@
+{
+ "source": "ExoFOP-TESS TOI table (coluna 'TESS Disposition'), via SAGAN",
+ "retrieved": "2026-10-02",
+ "total": 8148,
+ "counts": {
+  "PC": 6356,
+  "EB": 699,
+  "KP": 596,
+  "CP": 407,
+  "O": 46,
+  "IS": 23,
+  "V": 20,
+  "FP": 1
+ }
+}

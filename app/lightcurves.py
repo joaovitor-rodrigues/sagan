@@ -15,7 +15,7 @@ import pandas as pd
 
 MAX_PIPELINE_STEPS = 20
 
-X_LABEL_DEFAULT = "Dias — Barycentric Julian Date (BJD)"
+X_LABEL_DEFAULT = "Tempo (BTJD = BJD − 2.457.000)"
 X_LABEL_PHASE = "Fase (dias a partir do centro do trânsito)"
 Y_LABEL_DEFAULT = "Fluxo normalizado"
 
@@ -35,7 +35,7 @@ LC_FUNCTIONS = {
         "desc": "Dobra a curva de luz pelo período orbital, empilhando todos os trânsitos. Revela o padrão periódico com mais clareza.",
         "params": [
             {"name": "period",     "label": "Período (dias)",           "type": "number", "default": "", "min": 0.001, "step": 0.001, "placeholder": "Ex: 3.141", "required": True},
-            {"name": "epoch_time", "label": "Época T₀ (BJD, opcional)", "type": "number", "default": "", "step": 0.0001, "placeholder": "Deixe vazio para auto"},
+            {"name": "epoch_time", "label": "Época T₀ (BTJD, opcional)", "type": "number", "default": "", "step": 0.0001, "placeholder": "Deixe vazio para auto"},
         ],
     },
     "bin": {
@@ -71,8 +71,8 @@ LC_FUNCTIONS = {
         "label": "Truncar (intervalo)",
         "desc": "Recorta a curva de luz para um intervalo de tempo específico. Útil para focar em um trânsito ou setor.",
         "params": [
-            {"name": "before", "label": "Início (BJD, opcional)", "type": "number", "default": "", "step": 0.01, "placeholder": "Deixe vazio para usar o início"},
-            {"name": "after",  "label": "Fim (BJD, opcional)",    "type": "number", "default": "", "step": 0.01, "placeholder": "Deixe vazio para usar o fim"},
+            {"name": "before", "label": "Início (BTJD, opcional)", "type": "number", "default": "", "step": 0.01, "placeholder": "Deixe vazio para usar o início"},
+            {"name": "after",  "label": "Fim (BTJD, opcional)",    "type": "number", "default": "", "step": 0.01, "placeholder": "Deixe vazio para usar o fim"},
         ],
     },
 }

@@ -280,7 +280,7 @@
   function drawCompare() {
     var dtOrig = buildDataTable(BASE_X, BASE_Y);
     var dtMod  = buildDataTable(currentX, currentY);
-    var optOrig = chartOptions("Dias — BJD (original)", "Fluxo normalizado");
+    var optOrig = chartOptions("Tempo (BTJD) — original", "Fluxo normalizado");
     var optMod  = chartOptions(xLabel, yLabel);
 
     if (!origChart) origChart = new google.visualization.ScatterChart(document.getElementById('chartOriginal'));
@@ -373,7 +373,7 @@
     hideError();
     updateState({
       x: BASE_X, y: BASE_Y,
-      x_label: "Dias — Barycentric Julian Date (BJD)",
+      x_label: "Tempo (BTJD = BJD − 2.457.000)",
       y_label: "Fluxo normalizado",
       functions: [],
     });

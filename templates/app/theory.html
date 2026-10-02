@@ -1,218 +1,204 @@
 {% extends 'app/index.html' %}
+{% load static %}
 
 {% block title %}Teoria{% endblock %}
 {% block nav_theory %}active{% endblock %}
 
 {% block content %}
-<div class="page-container page-fade" style="max-width:860px;">
+<div class="page-container page-fade" style="max-width:880px;">
 
   <div class="page-header">
-    <h1>Teoria — Trânsitos e Exoplanetas</h1>
-    <p>Conceitos científicos por trás dos dados do TESS e como interpretar uma curva de luz.</p>
+    <h1>Teoria — o método de trânsito</h1>
+    <p>A física por trás de uma curva de luz, como o TESS transforma pixels em candidatos a planeta e o que cada ferramenta do SAGAN faz com os dados. As afirmações numeradas remetem às <a href="#referencias">referências</a> no fim da página.</p>
   </div>
 
   <div class="docs-body">
 
-    <!-- Exoplanets -->
-    <div class="docs-section">
-      <h2 class="docs-section-title">O que são exoplanetas?</h2>
-      <p>Exoplanetas são planetas que orbitam estrelas fora do nosso sistema solar. Desde a primeira confirmação nos anos 1990, mais de 5.000 exoplanetas foram descobertos — e o TESS expandiu esse catálogo exponencialmente.</p>
-      <p>Diferente dos planetas do sistema solar, exoplanetas não podem ser fotografados diretamente na maioria dos casos — são detectados por métodos indiretos, como o <strong>método de trânsito</strong>.</p>
+    <!-- 1 -->
+    <div class="docs-section" id="exoplanetas">
+      <h2 class="docs-section-title">Exoplanetas e trânsitos</h2>
+      <p>Em 1º de outubro de 2026, o NASA Exoplanet Archive listava <strong>6.375 exoplanetas confirmados</strong>, 939 deles pela missão TESS<span class="cite"><a href="#ref-1">1</a></span>. O primeiro trânsito de um exoplaneta foi publicado em 2000, quando o planeta de HD 209458 passou duas vezes diante da estrela, tal como as medidas de velocidade radial previam<span class="cite"><a href="#ref-2">2</a></span>.</p>
+      <p>Um trânsito só é visto quando a órbita está quase de perfil para nós. Para uma órbita circular, a probabilidade é aproximadamente R★/a. Isso dá cerca de 0,5% para um planeta a 1 UA de uma estrela como o Sol, e por isso os levantamentos precisam observar dezenas de milhares de estrelas<span class="cite"><a href="#ref-3">3</a></span>. Em compensação, o trânsito revela o tamanho do planeta e a geometria da órbita. Com medidas de velocidade radial, revela também a massa; com observações em vários comprimentos de onda, a atmosfera<span class="cite"><a href="#ref-3">3</a>,<a href="#ref-4">4</a></span>.</p>
     </div>
 
-    <!-- Transit method -->
-    <div class="docs-section">
-      <h2 class="docs-section-title">O Método de Trânsito</h2>
-      <p>Quando um planeta passa em frente à sua estrela (a partir da perspectiva da Terra), ele bloqueia uma pequena fração da luz estelar. Essa diminuição periódica no brilho é chamada de <strong>trânsito</strong>.</p>
+    <!-- 2 -->
+    <div class="docs-section" id="geometria">
+      <h2 class="docs-section-title">Geometria: o que uma curva de luz mede</h2>
+      <p>Durante o trânsito, o planeta encobre uma fração do disco estelar. Os <strong>quatro contatos</strong> (I a IV) marcam o início e o fim da entrada e da saída do planeta. Entre o segundo e o terceiro contato, o disco do planeta está inteiro sobre a estrela<span class="cite"><a href="#ref-3">3</a></span>.</p>
 
-      <div class="theory-diagram">
-        <div class="theory-diagram-inner">
-          <div class="diagram-star">★</div>
-          <div class="diagram-orbit">
-            <div class="diagram-planet">●</div>
-          </div>
-          <div class="diagram-arrow">→</div>
-          <div class="diagram-lc">
-            <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
-              <polyline points="0,20 60,20 75,55 90,55 105,20 200,20"
-                fill="none" stroke="#5B3FBF" stroke-width="2.5" stroke-linejoin="round"/>
-              <line x1="0" y1="20" x2="200" y2="20" stroke="#DDD6FE" stroke-width="1" stroke-dasharray="4"/>
-            </svg>
-          </div>
-        </div>
-        <p class="diagram-caption">Quando o planeta transita, o fluxo cai brevemente — essa "mordida" na curva de luz é a assinatura do planeta.</p>
+      <figure class="figure">
+        {% include "app/figures/fig-geometria.svg" %}
+        <figcaption><span class="fig-num">Figura 1.</span> Geometria de um trânsito com parâmetro de impacto b (distância da trajetória ao centro da estrela, em raios estelares) e a curva de luz alinhada. δ é a profundidade, T₁₄ a duração total, T₂₃ o fundo e τ a entrada. <span class="fig-source">Diagrama esquemático do SAGAN, seguindo a notação de Winn (2010)<span class="cite"><a href="#ref-3">3</a></span>.</span></figcaption>
+      </figure>
+
+      <p>A <strong>profundidade</strong> mede a razão entre as áreas do planeta e da estrela<span class="cite"><a href="#ref-3">3</a></span>. Em unidades práticas, como na proposta da missão TESS<span class="cite"><a href="#ref-4">4</a></span>:</p>
+      <div class="eq">δ ≈ (R<sub>p</sub>/R★)² = 337 ppm × (R<sub>p</sub> / 2 R⊕)² × (R★ / R☉)⁻²<small>Um planeta com duas vezes o raio da Terra diante de uma estrela como o Sol bloqueia 0,034% da luz; um Júpiter, cerca de 1%.</small></div>
+      <p>A <strong>duração</strong> depende do período, do parâmetro de impacto e da densidade média da estrela<span class="cite"><a href="#ref-4">4</a></span>:</p>
+      <div class="eq">T ≈ 3,91 h × (ρ★/ρ☉)<sup>−1/3</sup> × (P / 10 dias)<sup>1/3</sup> × √(1 − b²)</div>
+      <p>Isso permite tirar a <strong>densidade da estrela</strong> só da curva de luz, a partir da forma do trânsito e do período (ρ★ ≈ 3π/(GP²)·(a/R★)³). O resultado ajuda a descartar falsos positivos: se a densidade obtida não combina com o tipo da estrela, o sinal provavelmente não é de um planeta<span class="cite"><a href="#ref-3">3</a>,<a href="#ref-5">5</a></span>.</p>
+    </div>
+
+    <!-- 3 -->
+    <div class="docs-section" id="limbo">
+      <h2 class="docs-section-title">Escurecimento de limbo</h2>
+      <p>O disco de uma estrela é mais brilhante no centro do que na borda (o limbo). Na borda, a linha de visada atravessa camadas mais altas e frias da atmosfera estelar<span class="cite"><a href="#ref-3">3</a></span>. Por isso o fundo de um trânsito real é arredondado, e não plano. É comum descrever a intensidade com a lei quadrática, onde μ é o cosseno do ângulo entre a linha de visada e a normal à superfície<span class="cite"><a href="#ref-3">3</a>,<a href="#ref-6">6</a></span>:</p>
+      <div class="eq">I(μ) / I(1) = 1 − u₁(1 − μ) − u₂(1 − μ)²</div>
+      <p>Mandel &amp; Agol (2002) deram fórmulas analíticas exatas para esse caso. Elas ainda são a base dos modelos usados para ajustar trânsitos<span class="cite"><a href="#ref-6">6</a></span>.</p>
+
+      <figure class="figure">
+        {% include "app/figures/fig-modelo.svg" %}
+        <figcaption><span class="fig-num">Figura 2.</span> Trânsito de um planeta com 10% do raio da estrela (a/R★ = 8, b = 0,3, P = 3 dias): disco uniforme e disco com escurecimento de limbo quadrático. Com escurecimento, a queda no centro passa de k² porque o planeta cobre a região mais brilhante. <span class="fig-source">Modelo ilustrativo calculado pelo SAGAN por integração numérica (<code>scripts/make_figures.py</code>); lei de intensidade de Mandel &amp; Agol (2002)<span class="cite"><a href="#ref-6">6</a></span>.</span></figcaption>
+      </figure>
+    </div>
+
+    <!-- 4 -->
+    <div class="docs-section" id="tess">
+      <h2 class="docs-section-title">A missão TESS</h2>
+      <p>O <strong>Transiting Exoplanet Survey Satellite</strong> foi lançado em 18 de abril de 2018. Sua missão principal durou de julho de 2018 a julho de 2020 e cobriu cerca de 70% do céu; depois seguiram missões estendidas<span class="cite"><a href="#ref-7">7</a></span>. O objetivo é encontrar planetas em torno de estrelas próximas e brilhantes, que permitem medir massas e atmosferas depois<span class="cite"><a href="#ref-4">4</a></span>.</p>
+      <div class="fact-grid">
+        <div class="fact"><div class="fact-value">4 câmeras</div><div class="fact-label">cada uma com 24° × 24°; juntas, uma faixa de 24° × 96°<span class="cite"><a href="#ref-4">4</a></span></div></div>
+        <div class="fact"><div class="fact-value">600–1000 nm</div><div class="fact-label">banda vermelha, favorece estrelas frias e pequenas<span class="cite"><a href="#ref-4">4</a></span></div></div>
+        <div class="fact"><div class="fact-value">27,4 dias</div><div class="fact-label">por setor: duas órbitas de 13,7 dias, em ressonância 2:1 com a Lua<span class="cite"><a href="#ref-4">4</a></span></div></div>
+        <div class="fact"><div class="fact-value">2 min · 30 min</div><div class="fact-label">cadência das estrelas pré-selecionadas e das imagens de campo inteiro na missão principal<span class="cite"><a href="#ref-4">4</a>,<a href="#ref-7">7</a></span></div></div>
       </div>
-
-      <div class="theory-info-grid">
-        <div class="theory-info-card">
-          <div class="theory-info-title">Profundidade do trânsito</div>
-          <p>Indica a fração de luz bloqueada. É proporcional à razão entre as áreas do planeta e da estrela: <em>δ = (R_p / R_★)²</em>. Um trânsito de 1% significa que o planeta tem ~10% do raio da estrela.</p>
-        </div>
-        <div class="theory-info-card">
-          <div class="theory-info-title">Período orbital</div>
-          <p>É o intervalo de tempo entre dois trânsitos consecutivos. Equivale ao "ano" do exoplaneta — o tempo que leva para completar uma órbita em torno da sua estrela.</p>
-        </div>
-        <div class="theory-info-card">
-          <div class="theory-info-title">Duração do trânsito</div>
-          <p>Depende do tamanho da estrela e da velocidade orbital do planeta. Trânsitos típicos de planetas detectados pelo TESS duram de 1 a 8 horas.</p>
-        </div>
-        <div class="theory-info-card">
-          <div class="theory-info-title">Época (T₀)</div>
-          <p>É o tempo do primeiro trânsito observado (em BJD). Junto com o período, define quando os próximos trânsitos ocorrem: <em>Tₙ = T₀ + n × P</em>.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- TESS mission -->
-    <div class="docs-section">
-      <h2 class="docs-section-title">A Missão TESS</h2>
-      <p>O <strong>Transiting Exoplanet Survey Satellite (TESS)</strong> é um telescópio espacial da NASA lançado em 2018. Ele observa o céu em setores de 27 dias cada, cobrindo quase todo o céu em dois anos.</p>
-      <ul class="docs-list">
-        <li>Monitora mais de 200.000 estrelas brilhantes em busca de trânsitos.</li>
-        <li>Gera curvas de luz com cadência de 2 minutos ou 30 minutos.</li>
-        <li>Os dados são armazenados no arquivo <strong>MAST</strong> (Mikulski Archive for Space Telescopes) e são públicos.</li>
-        <li>Cada setor cobre uma faixa de ~24° × 96° do céu.</li>
-      </ul>
-    </div>
-
-    <!-- Light curve reading -->
-    <div class="docs-section">
-      <h2 class="docs-section-title">Como Ler uma Curva de Luz</h2>
-      <p>O eixo X é o tempo em <strong>BJD (Barycentric Julian Date)</strong> — dias contados a partir de um ponto de referência, corrigidos para o baricentro do Sistema Solar. O eixo Y é o <strong>fluxo normalizado</strong>: o brilho da estrela dividido pela mediana, então o valor "1.0" representa o brilho típico.</p>
-
+      <p>Estrelas perto dos polos da eclíptica caem em vários setores sobrepostos e chegam a ser observadas por cerca de um ano<span class="cite"><a href="#ref-7">7</a></span>. Os dados ficam públicos no arquivo MAST. O SAGAN baixa de lá as curvas de luz pelo pacote Lightkurve<span class="cite"><a href="#ref-14">14</a></span>.</p>
       <div class="docs-tip">
-        <i class="fa-solid fa-eye" style="color:var(--purple);"></i>
-        <span>Procure por quedas repetidas no fluxo com a mesma profundidade e espaçamento — essa é a assinatura clássica de um planeta em trânsito.</span>
+        <i class="fa-solid fa-clock" style="color:var(--purple);"></i>
+        <span><strong>Escala de tempo.</strong> O eixo horizontal das curvas de luz está em <strong>BTJD</strong> (TESS Barycentric Julian Date): BTJD = BJD − 2.457.000, em dias, já corrigido para o baricentro do Sistema Solar<span class="cite"><a href="#ref-7">7</a></span>. BTJD 1354 corresponde a 22 de agosto de 2018.</span>
       </div>
+    </div>
 
-      <p>Além dos trânsitos, curvas de luz podem mostrar:</p>
+    <!-- 5 -->
+    <div class="docs-section" id="toi">
+      <h2 class="docs-section-title">Do pixel ao TOI</h2>
+      <p>Dois pipelines transformam as imagens em curvas de luz: o <strong>SPOC</strong>, no NASA Ames, para as estrelas observadas a cada 2 minutos<span class="cite"><a href="#ref-8">8</a></span>, e o <strong>QLP</strong>, do MIT, para as imagens de campo inteiro. Ambos procuram quedas periódicas, os <em>Threshold Crossing Events</em> (TCEs). Uma triagem automática e depois equipes de especialistas descartam binárias, variáveis e artefatos e promovem os melhores sinais a <strong>TESS Objects of Interest</strong> (TOIs)<span class="cite"><a href="#ref-7">7</a></span>.</p>
+
+      <figure class="figure">
+        {% include "app/figures/fig-pipeline.svg" %}
+        <figcaption><span class="fig-num">Figura 3.</span> Caminho de um sinal até o catálogo TOI e o follow-up pela comunidade (TFOP). <span class="fig-source">Diagrama do SAGAN baseado na Figura 4 de Guerrero et al. (2021)<span class="cite"><a href="#ref-7">7</a></span>.</span></figcaption>
+      </figure>
+
+      <p>A escala é grande. Só na missão principal, a equipe examinou mais de 32 mil TCEs em inspeção manual, que resultaram em 2.241 TOIs. Desses, 565 (cerca de 25%) foram depois identificados como falsos positivos pelo follow-up<span class="cite"><a href="#ref-7">7</a></span>. Os sinais típicos de falso positivo são:</p>
       <ul class="docs-list">
-        <li><strong>Variabilidade estelar:</strong> oscilações lentas causadas pela rotação da estrela e manchas estelares.</li>
-        <li><strong>Flares (erupções):</strong> picos bruscos de brilho causados por atividade magnética.</li>
-        <li><strong>Artefatos instrumentais:</strong> saltos ou lacunas no início/fim de setores ou por saturação.</li>
-        <li><strong>Binárias eclipsantes:</strong> quedas profundas e assimétricas causadas por duas estrelas em órbita mútua.</li>
+        <li>um eclipse secundário profundo demais para um planeta;</li>
+        <li>trânsitos alternados com profundidades diferentes, porque é uma binária com o dobro do período;</li>
+        <li>o centroide da luz se deslocando para uma estrela vizinha durante o trânsito;</li>
+        <li>uma profundidade que cresce com a abertura fotométrica, indicando que o sinal vem de uma fonte próxima<span class="cite"><a href="#ref-7">7</a></span>.</li>
       </ul>
+
+      <h3 class="theory-func-title" style="margin-top:1.25rem;">O catálogo hoje</h3>
+      <p>A lista do SAGAN mostra a coluna <em>TESS Disposition</em> do ExoFOP-TESS<span class="cite"><a href="#ref-15">15</a></span>. Ela usa as classes do vetting (PC, EB, V, IS)<span class="cite"><a href="#ref-7">7</a></span> e as que vêm depois do acompanhamento: KP para planeta já conhecido de levantamentos anteriores e CP para planeta confirmado, o que inclui planetas validados estatisticamente<span class="cite"><a href="#ref-7">7</a></span>.</p>
+
+      <figure class="figure">
+        {% include "app/figures/fig-toi.svg" %}
+        <figcaption><span class="fig-num">Figura 4.</span> Os 8.148 TOIs do catálogo em 2 de outubro de 2026, por disposição. Três em cada quatro ainda são candidatos (PC) à espera de confirmação. <span class="fig-source">Dados: ExoFOP-TESS<span class="cite"><a href="#ref-15">15</a></span>, lidos pelo SAGAN. O total coincide com os 8.148 “TESS Project Candidates” do NASA Exoplanet Archive<span class="cite"><a href="#ref-1">1</a></span>. A disposição TFOP (CP/FP/FA), mantida pelo grupo de follow-up, é uma coluna separada no ExoFOP.</span></figcaption>
+        <details class="fig-data"><summary>Ver dados da figura</summary>
+          <table><thead><tr><th>Disposição</th><th>Significado</th><th>TOIs</th></tr></thead><tbody>
+            <tr><td>PC</td><td>candidato planetário: trânsito em forma de U</td><td>6356</td></tr>
+            <tr><td>EB</td><td>binária eclipsante: trânsito em forma de V</td><td>699</td></tr>
+            <tr><td>KP</td><td>planeta conhecido de levantamento anterior</td><td>596</td></tr>
+            <tr><td>CP</td><td>planeta confirmado ou validado</td><td>407</td></tr>
+            <tr><td>O</td><td>outros</td><td>46</td></tr>
+            <tr><td>IS</td><td>ruído instrumental ou sistemático</td><td>23</td></tr>
+            <tr><td>V</td><td>variabilidade estelar: forma senoidal</td><td>20</td></tr>
+            <tr><td>FP</td><td>falso positivo</td><td>1</td></tr>
+          </tbody></table>
+        </details>
+      </figure>
     </div>
 
-    <!-- Catalog fields -->
-    <div class="docs-section">
-      <h2 class="docs-section-title">Campos do Catálogo</h2>
+    <!-- 6 -->
+    <div class="docs-section" id="wasp18">
+      <h2 class="docs-section-title">Estudo de caso: WASP-18b</h2>
+      <p>WASP-18b é um gigante gasoso com cerca de 10 massas de Júpiter que completa uma órbita em <strong>0,94 dia</strong>. Foi descoberto em 2009 pelo levantamento WASP<span class="cite"><a href="#ref-12">12</a></span> e aparece no catálogo como TIC 100100827 e TOI 185. O TESS o observou nos Setores 2 e 3, entre agosto e outubro de 2018, com cadência de 2 minutos<span class="cite"><a href="#ref-13">13</a></span>. As figuras abaixo foram feitas com o próprio SAGAN, usando a curva SPOC do Setor 2. Você pode refazer tudo <a href="{% url 'object' ticID=100100827 ind=0 %}">abrindo o objeto</a> ou o <a href="{% url 'folded' ticID=100100827 ind=0 %}">periodograma automático</a>.</p>
 
-      <div class="theory-table-wrap">
-        <table class="theory-table">
-          <thead>
-            <tr><th>Campo</th><th>Descrição</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>TIC ID</strong></td>
-              <td>Identificador único no TESS Input Catalog. É o número de referência da estrela hospedeira.</td>
-            </tr>
-            <tr>
-              <td><strong>TOI</strong></td>
-              <td>TESS Object of Interest — número sequencial atribuído ao candidato planetário pelo time do TESS.</td>
-            </tr>
-            <tr>
-              <td><strong>Período (dias)</strong></td>
-              <td>Período orbital estimado do candidato, em dias terrestres.</td>
-            </tr>
-            <tr>
-              <td><strong>Raio Estelar (R☉)</strong></td>
-              <td>Raio da estrela em unidades de raios solares. Combinado com a profundidade do trânsito, estima o raio do planeta.</td>
-            </tr>
-            <tr>
-              <td><strong>Massa Estelar (M☉)</strong></td>
-              <td>Massa da estrela em massas solares. Junto com o período, estima a distância orbital pela 3ª Lei de Kepler.</td>
-            </tr>
-            <tr>
-              <td><strong>Data Identificação</strong></td>
-              <td>Quando o objeto foi primeiro reportado como candidato (TOI Alert).</td>
-            </tr>
-            <tr>
-              <td><strong>Fonte</strong></td>
-              <td>Pipeline que gerou a detecção (ex: SPOC — Science Processing Operations Center; QLP — Quick Look Pipeline).</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <figure class="figure">
+        {% include "app/figures/fig-wasp18-serie.svg" %}
+        <figcaption><span class="fig-num">Figura 5.</span> Curva de luz de WASP-18 no Setor 2: 28 trânsitos de cerca de 1% a cada 0,94 dia. A lacuna central é a pausa para transmitir os dados à Terra no perigeu. <span class="fig-source">Dados: TESS/SPOC via MAST<span class="cite"><a href="#ref-8">8</a>,<a href="#ref-14">14</a></span>. Processamento no SAGAN: remoção de outliers (5σ) e agrupamento em bins de 0,02 dia (29 min).</span></figcaption>
+      </figure>
+
+      <p>O periodograma <strong>BLS</strong><span class="cite"><a href="#ref-9">9</a></span> testa milhares de períodos e mede, para cada um, quão bem uma “caixa” periódica explica a queda de brilho. O pico principal sai em 0,9415 dia; o período publicado é de 0,94 dia<span class="cite"><a href="#ref-12">12</a>,<a href="#ref-13">13</a></span>. Os picos menores em P/2, 2P e 3P são harmônicos do mesmo sinal, um efeito esperado do método<span class="cite"><a href="#ref-9">9</a></span>.</p>
+
+      <figure class="figure">
+        {% include "app/figures/fig-bls.svg" %}
+        <figcaption><span class="fig-num">Figura 6.</span> Periodograma BLS da curva da Figura 5, normalizado pelo pico. <span class="fig-source">Calculado com <code>astropy.timeseries.BoxLeastSquares</code> (durações de 1 a 2,4 h), a mesma implementação usada pelo SAGAN.</span></figcaption>
+      </figure>
+
+      <p>Dobrando a curva no período encontrado, os 28 trânsitos se empilham e o ruído cai. Ampliando a escala vertical aparece a <strong>curva de fase</strong>. O brilho sobe e desce duas vezes por órbita porque a maré do planeta deforma a estrela (modulação elipsoidal). Perto de meia órbita, o planeta passa atrás da estrela e some uma luz de 341 ppm do lado diurno, que vem principalmente da emissão térmica: é o eclipse secundário. Shporer et al. (2019) mediram esses efeitos com os dados dos Setores 2 e 3<span class="cite"><a href="#ref-13">13</a></span>.</p>
+
+      <figure class="figure">
+        <div class="fig-pair">
+          <div>{% include "app/figures/fig-fold-transito.svg" %}</div>
+          <div>{% include "app/figures/fig-fold-fase.svg" %}</div>
+        </div>
+        <figcaption><span class="fig-num">Figura 7.</span> À esquerda, o trânsito dobrado: cerca de 1,1% de profundidade e pouco mais de 2 horas de duração. À direita, a mesma curva com escala ampliada: modulação elipsoidal (máximos perto de ±6 h, um quarto de órbita) e eclipse secundário nas bordas (±11 h). <span class="fig-source">Pipeline no SAGAN: remover outliers (5σ) → dobrar (P = 0,9414445 d; T₀ = 1354,46 BTJD) → agrupar (0,004 d ≈ 6 min). Interpretação segundo Shporer et al. (2019)<span class="cite"><a href="#ref-13">13</a></span>.</span></figcaption>
+      </figure>
     </div>
 
-    <!-- Dispositions -->
-    <div class="docs-section">
-      <h2 class="docs-section-title">Disposições (Classificações)</h2>
-      <p>A <strong>disposição</strong> indica o grau de confiança de que o objeto é um planeta genuíno, após análise pela comunidade científica:</p>
-
-      <div class="theory-disposition-grid">
-        <div class="theory-disp-card">
-          <span class="badge-disposition badge-kp" style="font-size:0.875rem; padding:.3rem .8rem;">KP</span>
-          <div>
-            <strong>Known Planet (Planeta Confirmado)</strong>
-            <p>O exoplaneta foi confirmado por métodos independentes (velocidade radial, análise estatística, etc.). É a classificação mais confiável.</p>
-          </div>
-        </div>
-        <div class="theory-disp-card">
-          <span class="badge-disposition badge-cp" style="font-size:0.875rem; padding:.3rem .8rem;">CP</span>
-          <div>
-            <strong>Confirmed Planet (Planeta Confirmado)</strong>
-            <p>Confirmação pela comunidade exoplanetária, geralmente publicada em artigo científico revisado por pares.</p>
-          </div>
-        </div>
-        <div class="theory-disp-card">
-          <span class="badge-disposition badge-pc" style="font-size:0.875rem; padding:.3rem .8rem;">PC</span>
-          <div>
-            <strong>Planet Candidate (Candidato Planetário)</strong>
-            <p>O sinal é consistente com um trânsito planetário mas ainda não foi confirmado. A maioria dos objetos do TESS está nesta categoria.</p>
-          </div>
-        </div>
-        <div class="theory-disp-card">
-          <span class="badge-disposition badge-fp" style="font-size:0.875rem; padding:.3rem .8rem;">FP</span>
-          <div>
-            <strong>False Positive (Falso Positivo)</strong>
-            <p>O sinal foi descartado — geralmente é uma binária eclipsante em fundo, contaminação de estrela vizinha, ou artefato instrumental.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Functions explanation -->
-    <div class="docs-section">
-      <h2 class="docs-section-title">Funções de Análise — Teoria</h2>
+    <!-- 7 -->
+    <div class="docs-section" id="ferramentas">
+      <h2 class="docs-section-title">As ferramentas do SAGAN</h2>
+      <p>Cada função do painel de análise chama o pacote Lightkurve<span class="cite"><a href="#ref-14">14</a></span>. A ordem importa: o SAGAN guarda a lista de funções e a reaplica sempre a partir da curva original.</p>
 
       <div class="theory-func-section">
-        <h3 class="theory-func-title">Flatten (Achatar)</h3>
-        <p>Aplica um filtro <strong>Savitzky-Golay</strong> para modelar e remover a variação de baixa frequência do brilho estelar (chamada de <em>systematics</em> ou variabilidade intrínseca). O filtro ajusta um polinômio local dentro de uma janela deslizante.</p>
-        <ul class="docs-list">
-          <li><strong>window_length:</strong> tamanho da janela em pontos de dados. Janelas maiores removem variações mais lentas; menores preservam mais estrutura.</li>
-          <li><strong>polyorder:</strong> grau do polinômio ajustado. Valores maiores seguem variações mais complexas.</li>
-        </ul>
-        <div class="docs-tip">
-          <i class="fa-solid fa-lightbulb" style="color:var(--purple);"></i>
-          <span>Para trânsitos típicos do TESS, window_length entre 51 e 201 é um bom ponto de partida. Use janelas menores que a duração do trânsito para não distorcê-lo.</span>
-        </div>
+        <h3 class="theory-func-title">Achatar (Flatten)</h3>
+        <p>Remove tendências lentas, como a rotação da estrela ou sistemáticos do instrumento, dividindo a curva por uma versão suavizada pelo filtro de <strong>Savitzky–Golay</strong>. O filtro ajusta um polinômio de grau fixo dentro de uma janela deslizante<span class="cite"><a href="#ref-11">11</a></span>. A janela, em pontos, precisa ser bem maior que a duração do trânsito. Na cadência de 2 minutos, 101 pontos equivalem a cerca de 3,4 h; uma janela curta demais “come” o trânsito.</p>
       </div>
-
       <div class="theory-func-section">
-        <h3 class="theory-func-title">Fold (Dobrar)</h3>
-        <p>A dobragem de fase transforma o eixo de tempo em <strong>fase</strong> (0 a 1, ou -0.5 a 0.5). Todos os pontos separados por um múltiplo inteiro do período ficam na mesma fase.</p>
-        <p>Resultado: se o período estiver correto, todos os trânsitos se alinham e a forma do trânsito fica muito mais nítida. Se o período estiver errado, os pontos ficam espalhados sem padrão.</p>
+        <h3 class="theory-func-title">Dobrar (Fold)</h3>
+        <p>Converte o tempo em <strong>fase</strong>: cada ponto passa a ser medido em dias a partir do trânsito mais próximo (T₀ + n·P). Com o período certo, os trânsitos se alinham, como na Figura 7; com o errado, os pontos se espalham. O periodograma automático do SAGAN preenche P e T₀ com o resultado do BLS.</p>
       </div>
-
       <div class="theory-func-section">
-        <h3 class="theory-func-title">Bin (Agrupar)</h3>
-        <p>Divide o eixo de tempo em bins de tamanho fixo e calcula a média (ou mediana ponderada) dos pontos em cada bin. Reduz ruído aleatório (ruído branco) em proporção a <em>√N</em>, onde N é o número de pontos por bin.</p>
-        <p>Essencial após o Fold: a curva dobrada tem muitos pontos sobrepostos — o binning revela a forma média do trânsito de forma limpa.</p>
+        <h3 class="theory-func-title">Agrupar (Bin)</h3>
+        <p>Calcula a média dos pontos dentro de intervalos de tempo fixos. Para ruído branco, a dispersão cai como 1/√N, onde N é o número de pontos por bin. Bins maiores que a entrada do trânsito (τ) borram a forma da curva.</p>
       </div>
-
       <div class="theory-func-section">
-        <h3 class="theory-func-title">Remover Outliers</h3>
-        <p>Usa <strong>sigma clipping</strong> iterativo: calcula a mediana e o desvio padrão dos dados, remove pontos que estão além de N σ, e repete até convergir. Eficaz para remover flares, raios cósmicos e artefatos de leitura.</p>
+        <h3 class="theory-func-title">Remover outliers</h3>
+        <p><em>Sigma clipping</em>: descarta pontos a mais de N desvios-padrão da mediana e repete o corte. Remove erupções (flares), raios cósmicos e artefatos. Também pode cortar o fundo de trânsitos muito profundos se N for pequeno, por isso o padrão é 5σ.</p>
       </div>
-
+      <div class="theory-func-section">
+        <h3 class="theory-func-title">Suavizar, normalizar e truncar</h3>
+        <p><strong>Suavizar</strong> aplica uma média móvel centrada. <strong>Normalizar</strong> divide o fluxo pela mediana, com unidade adimensional, % ou ppm. <strong>Truncar</strong> recorta um intervalo de tempo em BTJD, útil para estudar um trânsito isolado.</p>
+      </div>
       <div class="theory-func-section">
         <h3 class="theory-func-title">Periodograma (BLS)</h3>
-        <p>O <strong>Box Least Squares (BLS)</strong> é um método otimizado para detectar sinais de trânsito — variações em forma de caixa (box-shaped). Ele testa sistematicamente vários períodos e quantifica o quão bem um trânsito de caixa se ajusta aos dados em cada período.</p>
-        <p>O pico mais alto no periodograma indica o período mais provável. Em objetos com trânsito real, o pico é proeminente e bem definido; em falsos positivos ou variáveis, o espectro é mais ruidoso.</p>
+        <p>O <em>Box Least Squares</em> dobra a curva em cada período de teste e ajusta um modelo de dois níveis: o brilho normal e um nível mais baixo durante uma fração <em>q</em> da órbita. A estatística resultante mede quanto a “caixa” reduz os resíduos. Segundo os autores, a detecção é significativa quando a profundidade dividida pela incerteza da média dentro do trânsito passa de cerca de 6<span class="cite"><a href="#ref-9">9</a></span>. O BLS é preferido ao periodograma de Lomb–Scargle porque trânsitos são curtos e nada senoidais. O Lomb–Scargle supõe um sinal senoidal e espalha a potência de um trânsito por vários harmônicos<span class="cite"><a href="#ref-9">9</a>,<a href="#ref-10">10</a></span>.</p>
       </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="docs-section" id="pt">
+      <h2 class="docs-section-title">Para ler em português</h2>
+      <p>Trabalhos acadêmicos brasileiros sobre o tema, encontrados na Biblioteca Digital Brasileira de Teses e Dissertações:</p>
+      <ul class="refs" style="list-style:disc;">
+        <li>Basile, A. L. (2017). <em>Serviço local de periodograma em GPU para detecção de trânsitos planetários</em>. Tese de doutorado, Universidade Presbiteriana Mackenzie. <a href="http://dspace.mackenzie.br/handle/10899/25795" target="_blank" rel="noopener">dspace.mackenzie.br/handle/10899/25795</a></li>
+        <li>Siqueira, M. F. F. T. (2020). <em>Caracterização da atmosfera de exoplanetas do tipo hot-júpiters via espectrofotometria diferencial do trânsito</em>. Dissertação de mestrado, UNIFEI. <a href="https://repositorio.unifei.edu.br/jspui/handle/123456789/2368" target="_blank" rel="noopener">repositorio.unifei.edu.br/jspui/handle/123456789/2368</a></li>
+        <li>Andrade, I. S. R. (2021). <em>Aprendizado de máquina para detecção de exoplanetas em dados da missão TESS</em>. Dissertação de mestrado, Universidade Presbiteriana Mackenzie. <a href="https://dspace.mackenzie.br/handle/10899/28660" target="_blank" rel="noopener">dspace.mackenzie.br/handle/10899/28660</a></li>
+        <li>Correa, L. N. (2025). <em>Monitoramento fotométrico de efemérides de trânsitos de exoplanetas e inferência de idade de estrelas hospedeiras</em>. Dissertação de mestrado, UEPG. <a href="http://tede2.uepg.br/jspui/handle/prefix/4747" target="_blank" rel="noopener">tede2.uepg.br/jspui/handle/prefix/4747</a></li>
+      </ul>
+    </div>
+
+    <!-- Referências -->
+    <div class="docs-section" id="referencias">
+      <h2 class="docs-section-title">Referências</h2>
+      <ol class="refs">
+        <li id="ref-1">NASA Exoplanet Archive. Contagens de planetas confirmados e candidatos do TESS. <a href="https://exoplanetarchive.ipac.caltech.edu/" target="_blank" rel="noopener">exoplanetarchive.ipac.caltech.edu</a> (acesso em 2 out. 2026).</li>
+        <li id="ref-2">Charbonneau, D.; Brown, T. M.; Latham, D. W.; Mayor, M. (2000). Detection of Planetary Transits Across a Sun-like Star. <em>ApJ</em> 529, L45. <a href="https://doi.org/10.1086/312457" target="_blank" rel="noopener">doi:10.1086/312457</a></li>
+        <li id="ref-3">Winn, J. N. (2010). Transits and Occultations. In: Seager, S. (ed.), <em>Exoplanets</em>. University of Arizona Press. <a href="https://arxiv.org/abs/1001.2010" target="_blank" rel="noopener">arXiv:1001.2010</a></li>
+        <li id="ref-4">Ricker, G. R. et al. (2015). Transiting Exoplanet Survey Satellite. <em>J. Astron. Telesc. Instrum. Syst.</em> 1, 014003. <a href="https://doi.org/10.1117/1.JATIS.1.1.014003" target="_blank" rel="noopener">doi:10.1117/1.JATIS.1.1.014003</a></li>
+        <li id="ref-5">Seager, S.; Mallén-Ornelas, G. (2003). A Unique Solution of Planet and Star Parameters from an Extrasolar Planet Transit Light Curve. <em>ApJ</em> 585, 1038. <a href="https://doi.org/10.1086/346105" target="_blank" rel="noopener">doi:10.1086/346105</a></li>
+        <li id="ref-6">Mandel, K.; Agol, E. (2002). Analytic Light Curves for Planetary Transit Searches. <em>ApJ</em> 580, L171. <a href="https://doi.org/10.1086/345520" target="_blank" rel="noopener">doi:10.1086/345520</a></li>
+        <li id="ref-7">Guerrero, N. M. et al. (2021). The TESS Objects of Interest Catalog from the TESS Prime Mission. <em>ApJS</em> 254, 39. <a href="https://doi.org/10.3847/1538-4365/abefe1" target="_blank" rel="noopener">doi:10.3847/1538-4365/abefe1</a></li>
+        <li id="ref-8">Jenkins, J. M. et al. (2016). The TESS Science Processing Operations Center. <em>Proc. SPIE</em> 9913, 99133E. <a href="https://doi.org/10.1117/12.2233418" target="_blank" rel="noopener">doi:10.1117/12.2233418</a></li>
+        <li id="ref-9">Kovács, G.; Zucker, S.; Mazeh, T. (2002). A box-fitting algorithm in the search for periodic transits. <em>A&amp;A</em> 391, 369. <a href="https://doi.org/10.1051/0004-6361:20020802" target="_blank" rel="noopener">doi:10.1051/0004-6361:20020802</a></li>
+        <li id="ref-10">VanderPlas, J. T. (2018). Understanding the Lomb–Scargle Periodogram. <em>ApJS</em> 236, 16. <a href="https://doi.org/10.3847/1538-4365/aab766" target="_blank" rel="noopener">doi:10.3847/1538-4365/aab766</a></li>
+        <li id="ref-11">Savitzky, A.; Golay, M. J. E. (1964). Smoothing and Differentiation of Data by Simplified Least Squares Procedures. <em>Analytical Chemistry</em> 36, 1627. <a href="https://doi.org/10.1021/ac60214a047" target="_blank" rel="noopener">doi:10.1021/ac60214a047</a></li>
+        <li id="ref-12">Hellier, C. et al. (2009). An orbital period of 0.94 days for the hot-Jupiter planet WASP-18b. <em>Nature</em> 460, 1098. <a href="https://doi.org/10.1038/nature08245" target="_blank" rel="noopener">doi:10.1038/nature08245</a></li>
+        <li id="ref-13">Shporer, A. et al. (2019). TESS Full Orbital Phase Curve of the WASP-18b System. <em>AJ</em> 157, 178. <a href="https://doi.org/10.3847/1538-3881/ab0f96" target="_blank" rel="noopener">doi:10.3847/1538-3881/ab0f96</a></li>
+        <li id="ref-14">Lightkurve Collaboration (2018). Lightkurve: Kepler and TESS time series analysis in Python. Astrophysics Source Code Library, ascl:1812.013. <a href="https://ui.adsabs.harvard.edu/abs/2018ascl.soft12013L" target="_blank" rel="noopener">ADS</a></li>
+        <li id="ref-15">ExoFOP-TESS — Exoplanet Follow-up Observing Program, NASA/IPAC. Tabela de TOIs. <a href="https://exofop.ipac.caltech.edu/tess/" target="_blank" rel="noopener">exofop.ipac.caltech.edu/tess</a> (acesso em 2 out. 2026).</li>
+      </ol>
+      <p style="font-size:.8125rem; color:var(--text-muted);">Os dados de WASP-18 e do catálogo usados nas figuras e o script que as gera estão no repositório, em <a href="https://github.com/joaovitor-rodrigues/sagan/tree/main/scripts" target="_blank" rel="noopener">scripts/</a>.</p>
     </div>
 
   </div>
@@ -227,4 +213,8 @@
   </div>
 
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'app/charts.js' %}" defer></script>
 {% endblock %}
