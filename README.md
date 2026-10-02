@@ -1,6 +1,6 @@
 # SAGAN — Search, Ask, Gather, Analyze, Now
 
-[![Live demo](https://img.shields.io/badge/demo-live-5B3FBF)](https://sagan-tess.vercel.app)
+[![Live demo](https://img.shields.io/badge/demo-live-5B3FBF)](https://sagan.joaovrodrigues.com.br/)
 ![Python](https://img.shields.io/badge/Python-3.13-3776AB)
 ![Django](https://img.shields.io/badge/Django-5.2-092E20)
 ![Deploy](https://img.shields.io/badge/deploy-Vercel-000000)
