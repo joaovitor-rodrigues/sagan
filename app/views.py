@@ -146,11 +146,14 @@ def tessObject(request, ticID, ind):
 
 
 def foldLightCurve(request, ticID, ind):
-    """Mesma página, já com uma etapa "fold" no período do periodograma."""
+    """Mesma página, já com uma etapa "fold" no período e T0 encontrados pelo BLS."""
     try:
         time, flux = lcs.get_base_lightcurve(ticID, ind)
-        period = round(lcs.best_period(time, flux), 6)
-        pipeline = lcs.validate_pipeline([{"name": "fold", "params": {"period": period}}])
+        period, t0 = lcs.best_transit(time, flux)
+        pipeline = lcs.validate_pipeline([{
+            "name": "fold",
+            "params": {"period": round(period, 6), "epoch_time": round(t0, 5)},
+        }])
         return _render_object(request, ticID, ind, pipeline)
     except IndexError as e:
         return HttpResponse(str(e), status=404)

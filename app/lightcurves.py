@@ -7,6 +7,7 @@ em ambiente serverless (Vercel) com várias instâncias.
 """
 import math
 import os
+import threading
 from functools import lru_cache
 
 import numpy as np
@@ -15,7 +16,7 @@ import pandas as pd
 MAX_PIPELINE_STEPS = 20
 
 X_LABEL_DEFAULT = "Dias — Barycentric Julian Date (BJD)"
-X_LABEL_PHASE = "Fase (unidades do período)"
+X_LABEL_PHASE = "Fase (dias a partir do centro do trânsito)"
 Y_LABEL_DEFAULT = "Fluxo normalizado"
 
 # ── Registro das operações disponíveis na interface ─────────────────────────
@@ -83,6 +84,12 @@ class PipelineError(ValueError):
 
 # ── Download (com cache) ────────────────────────────────────────────────────
 
+# Requisições simultâneas na mesma instância (Fluid compute) compartilham o
+# cache em disco do lightkurve; serializar as chamadas ao MAST evita downloads
+# duplicados do mesmo arquivo FITS.
+_mast_lock = threading.Lock()
+
+
 def _download_dir():
     return os.environ.get("SAGAN_CACHE_DIR") or None
 
@@ -90,7 +97,8 @@ def _download_dir():
 @lru_cache(maxsize=32)
 def search(tic_id: int):
     import lightkurve as lk
-    return lk.search_lightcurve(f"TIC {tic_id}", mission="TESS")
+    with _mast_lock:
+        return lk.search_lightcurve(f"TIC {tic_id}", mission="TESS")
 
 
 @lru_cache(maxsize=16)
@@ -99,17 +107,20 @@ def get_base_lightcurve(tic_id: int, ind: int):
     result = search(tic_id)
     if ind < 0 or ind >= len(result):
         raise IndexError("Observação inexistente para este alvo.")
-    lc = result[ind].download(download_dir=_download_dir()).normalize()
+    with _mast_lock:
+        lc = result[ind].download(download_dir=_download_dir())
+    lc = lc.normalize()
     time = np.asarray(lc.time.value, dtype=float)
     flux = np.asarray(lc.flux.value, dtype=float)
     return time, flux
 
 
-def best_period(time, flux) -> float:
-    """Período mais provável de trânsito, via Box Least Squares (BLS).
+def best_transit(time, flux):
+    """Período e instante central de trânsito mais prováveis, via Box Least Squares.
 
     O BLS procura quedas periódicas em forma de "caixa", que é o formato de
     um trânsito; o Lomb-Scargle (senoidal) tende a escolher harmônicos.
+    Retorna (período em dias, T0 no mesmo sistema de tempo da curva).
     """
     lc = _make_lc(time, flux).remove_nans()
     baseline = float(lc.time.value.max() - lc.time.value.min())
@@ -121,7 +132,7 @@ def best_period(time, flux) -> float:
         duration=[0.04, 0.08, 0.12, 0.2],
         frequency_factor=500,
     )
-    return float(pg.period_at_max_power.value)
+    return float(pg.period_at_max_power.value), float(pg.transit_time_at_max_power.value)
 
 
 # ── Pipeline ────────────────────────────────────────────────────────────────

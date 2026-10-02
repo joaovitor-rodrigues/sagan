@@ -21,7 +21,7 @@ from MAST, and lets you clean, fold and compare them interactively — no Python
 - **Analysis pipeline** — chain [Lightkurve](https://docs.lightkurve.org/) operations and see the result instantly:
   flatten (Savitzky–Golay), fold by period, bin, sigma-clip outliers, smooth, normalize (ratio / % / ppm) and truncate.
   Any step can be removed, and an original-vs-processed comparison view is available.
-- **Automatic period search** — a Box Least Squares (BLS) periodogram finds the most likely transit period and folds the curve on it.
+- **Automatic period search** — a Box Least Squares (BLS) periodogram finds the most likely transit period and mid-transit time, and folds the curve centered on the transit.
 - **Learning pages** — a step-by-step guide and a theory section on the transit method.
 
 ## Architecture
@@ -71,10 +71,10 @@ There is no database, so no migrations are needed.
 python manage.py test
 ```
 
-25 tests; external services are mocked with a synthetic transit light curve, so the suite runs offline.
+26 tests; external services are mocked with a synthetic transit light curve, so the suite runs offline.
 It covers catalog search/filters/ordering, the observation lookup, every pipeline operation, chained
 pipelines, input validation (unknown operations, bad values, size limit, malformed JSON), CSRF
-enforcement and BLS period recovery.
+enforcement, BLS period/T0 recovery and locale-safe numeric inputs.
 
 ## Deployment (Vercel)
 

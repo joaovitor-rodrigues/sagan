@@ -143,6 +143,16 @@ class LightCurveTests(SimpleTestCase):
         self.assertEqual(pipeline[0]["name"], "fold")
         # A curva sintética tem trânsitos a cada 3 dias
         self.assertAlmostEqual(pipeline[0]["params"]["period"], 3.0, delta=0.05)
+        # ...e o T0 encontrado centraliza o trânsito na fase 0
+        x, y = resp.context["x"], resp.context["y"]
+        dip_phase = x[min(range(len(y)), key=lambda i: y[i] if y[i] is not None else 9e9)]
+        self.assertLess(abs(dip_phase), 0.1)
+
+    def test_param_inputs_use_decimal_point(self, _):
+        html = self.client.get(reverse("object", args=[TIC, 0])).content.decode()
+        self.assertIn('value="0.02"', html)
+        self.assertIn('step="0.001"', html)
+        self.assertNotIn('value="0,02"', html)
 
     def test_light_curve_downloaded_once(self, search_mock):
         self.client.get(reverse("object", args=[TIC, 0]))
